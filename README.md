@@ -3,7 +3,7 @@
 # AlertFrog SIMS
 
 Security Incident Management System (SIMS) scaffold with a TypeScript frontend, .NET 8 WebAPI backend, MySQL/EF Core persistence, and Redis logging—each running as its own Docker service. This README documents the current functionality and how to get the stack running.
-
+## README
 ## Repository layout
 
 ```
