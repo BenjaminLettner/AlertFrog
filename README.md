@@ -1,4 +1,4 @@
-![AlertFrog Logo](assets/AlertFrog.png)
+![AlertFrog Logo](assets/AlertFrog_logo.png)
 
 # AlertFrog SIMS
 
