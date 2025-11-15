@@ -286,6 +286,7 @@ select:focus {
 
 .incidents-card {
   padding: 1.5rem;
+  overflow-x: auto;
 }
 
 .incidents-card__head {
@@ -311,7 +312,7 @@ select:focus {
 
 .incidents-table .table-row,
 .incidents-table .table-row.head {
-  grid-template-columns: 2.1fr 0.9fr 0.9fr 0.9fr 1.1fr 1.3fr 1.3fr 1.3fr 0.8fr;
+  grid-template-columns: 2.4fr 0.9fr 1fr 1.1fr 1.3fr 1.2fr 1.2fr 1.2fr 1fr;
 }
 
 .users-table .table-row,
