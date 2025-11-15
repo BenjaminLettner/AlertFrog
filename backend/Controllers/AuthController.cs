@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Backend.Constants;
 using Backend.Data;
 using Backend.Models;
 using Backend.Options;
@@ -21,7 +22,7 @@ public class AuthController(AlertFrogDbContext dbContext, IOptions<JwtOptions> j
     [HttpPost("login")]
     public async Task<ActionResult<LoginResponse>> Login(LoginRequest request)
     {
-        var user = await dbContext.Users.SingleOrDefaultAsync(u => u.Email == request.Email);
+        var user = await dbContext.Users.Include(u => u.Role).SingleOrDefaultAsync(u => u.Email == request.Email);
         if (user is null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
         {
             return Unauthorized(new { message = "Invalid credentials" });
@@ -34,7 +35,7 @@ public class AuthController(AlertFrogDbContext dbContext, IOptions<JwtOptions> j
             Token = token,
             Name = user.Name,
             Email = user.Email,
-            Role = user.Role
+            Role = user.Role?.Name ?? SystemRoles.User
         });
     }
 
@@ -47,13 +48,19 @@ public class AuthController(AlertFrogDbContext dbContext, IOptions<JwtOptions> j
             return Conflict(new { message = "User already exists" });
         }
 
+        var role = await dbContext.Roles.SingleOrDefaultAsync(r => r.Name == request.Role);
+        if (role is null)
+        {
+            return BadRequest(new { message = $"Role '{request.Role}' is not recognized." });
+        }
+
         var user = new User
         {
             Id = Guid.NewGuid(),
             Email = request.Email,
             Name = request.Name,
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
-            Role = request.Role
+            RoleId = role.Id
         };
 
         dbContext.Users.Add(user);
@@ -71,7 +78,7 @@ public class AuthController(AlertFrogDbContext dbContext, IOptions<JwtOptions> j
             new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new(JwtRegisteredClaimNames.Email, user.Email),
             new(ClaimTypes.Name, user.Name),
-            new(ClaimTypes.Role, user.Role)
+            new(ClaimTypes.Role, user.Role?.Name ?? SystemRoles.User)
         };
 
         var descriptor = new SecurityTokenDescriptor
