@@ -1,15 +1,20 @@
 import { useState } from 'react'
+import type { Session } from '../types/session'
+import logoAsset from '../assets/alertfrog-logo.png'
 
 type LoginViewProps = {
-  onLogin: (email: string) => void
+  onLogin: (session: Session) => void
 }
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080'
 
 export const LoginView = ({ onLogin }: LoginViewProps) => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
     if (!email.trim() || !password.trim()) {
@@ -17,20 +22,45 @@ export const LoginView = ({ onLogin }: LoginViewProps) => {
       return
     }
 
+    setIsSubmitting(true)
     setError('')
-    onLogin(email)
-    setEmail('')
-    setPassword('')
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      })
+
+      if (!response.ok) {
+        const payload = await response.json().catch(() => ({}))
+        throw new Error(payload.message ?? 'Login failed')
+      }
+
+      const payload = (await response.json()) as Session
+      onLogin(payload)
+      setEmail('')
+      setPassword('')
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message)
+      } else {
+        setError('Unexpected error during login')
+      }
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
     <div className="glass-card login-card">
       <div className="brand-mark">
-        <span className="logo-dot" />
+        <img src={logoAsset} alt="AlertFrog" className="logo-img hero" width={72} height={72} />
         <div>
           <p className="eyebrow">AlertFrog SIMS</p>
-          <h1>Secure Login</h1>
-          <p className="eyebrow muted">Manage incidents with confidence.</p>
+          <p className="muted">Authenticate to access your security console.</p>
         </div>
       </div>
 
@@ -54,8 +84,8 @@ export const LoginView = ({ onLogin }: LoginViewProps) => {
           />
         </label>
         {error && <p className="error-text">{error}</p>}
-        <button type="submit" className="frog-button">
-          Enter Console
+        <button type="submit" className="frog-button" disabled={isSubmitting}>
+          {isSubmitting ? 'Entering...' : 'Enter Console'}
         </button>
       </form>
 
