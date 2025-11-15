@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Backend.Constants;
 using Backend.Data;
 using Backend.Requests;
 using Backend.Responses;
@@ -31,6 +32,130 @@ public class UsersController(AlertFrogDbContext dbContext) : ControllerBase
             Email = user.Email,
             Role = user.Role?.Name ?? string.Empty
         };
+    }
+
+    [HttpGet]
+    [Authorize(Roles = SystemRoles.Admin)]
+    public async Task<ActionResult<IEnumerable<UserSummaryResponse>>> GetUsers()
+    {
+        var users = await dbContext.Users.Include(u => u.Role).OrderBy(u => u.Name).ToListAsync();
+        var result = users.Select(u => new UserSummaryResponse
+        {
+            Id = u.Id,
+            Name = u.Name,
+            Email = u.Email,
+            Role = u.Role?.Name ?? string.Empty,
+            CreatedAt = u.CreatedAt
+        });
+
+        return Ok(result);
+    }
+
+    [HttpPost]
+    [Authorize(Roles = SystemRoles.Admin)]
+    public async Task<ActionResult<UserSummaryResponse>> CreateUser(CreateUserRequest request)
+    {
+        var role = await dbContext.Roles.SingleOrDefaultAsync(r => r.Name == request.Role);
+        if (role is null)
+        {
+            return BadRequest(new { message = $"Role '{request.Role}' is not recognized." });
+        }
+
+        var exists = await dbContext.Users.AnyAsync(u => u.Email == request.Email);
+        if (exists)
+        {
+            return Conflict(new { message = "Email already in use." });
+        }
+
+        var user = new Backend.Models.User
+        {
+            Id = Guid.NewGuid(),
+            Name = request.Name,
+            Email = request.Email,
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
+            RoleId = role.Id
+        };
+
+        dbContext.Users.Add(user);
+        await dbContext.SaveChangesAsync();
+
+        return CreatedAtAction(nameof(GetUsers), new { id = user.Id }, new UserSummaryResponse
+        {
+            Id = user.Id,
+            Name = user.Name,
+            Email = user.Email,
+            Role = role.Name,
+            CreatedAt = user.CreatedAt
+        });
+    }
+
+    [HttpPut("{id:guid}")]
+    [Authorize(Roles = SystemRoles.Admin)]
+    public async Task<ActionResult<UserSummaryResponse>> UpdateUser(Guid id, UpdateUserRequest request)
+    {
+        var user = await dbContext.Users.Include(u => u.Role).SingleOrDefaultAsync(u => u.Id == id);
+        if (user is null)
+        {
+            return NotFound();
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.Email) && !request.Email.Equals(user.Email, StringComparison.OrdinalIgnoreCase))
+        {
+            var exists = await dbContext.Users.AnyAsync(u => u.Email == request.Email && u.Id != id);
+            if (exists)
+            {
+                return Conflict(new { message = "Email already in use." });
+            }
+            user.Email = request.Email;
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.Name))
+        {
+            user.Name = request.Name;
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.Role))
+        {
+            var role = await dbContext.Roles.SingleOrDefaultAsync(r => r.Name == request.Role);
+            if (role is null)
+            {
+                return BadRequest(new { message = $"Role '{request.Role}' is not recognized." });
+            }
+            user.RoleId = role.Id;
+            user.Role = role;
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.Password))
+        {
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
+        }
+
+        await dbContext.SaveChangesAsync();
+
+        return new UserSummaryResponse
+        {
+            Id = user.Id,
+            Name = user.Name,
+            Email = user.Email,
+            Role = user.Role?.Name ?? string.Empty,
+            CreatedAt = user.CreatedAt
+        };
+    }
+
+    [HttpDelete("{id:guid}")]
+    [Authorize(Roles = SystemRoles.Admin)]
+    public async Task<IActionResult> DeleteUser(Guid id)
+    {
+        var user = await dbContext.Users.SingleOrDefaultAsync(u => u.Id == id);
+        if (user is null)
+        {
+            return NotFound();
+        }
+
+        dbContext.Users.Remove(user);
+        await dbContext.SaveChangesAsync();
+
+        return NoContent();
     }
 
     [HttpPut("me")]

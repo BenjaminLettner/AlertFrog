@@ -4,7 +4,7 @@ import logoAsset from '../assets/alertfrog-logo.png'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080'
 
-const navItems = ['Dashboard', 'Incidents', 'Hosts', 'User Management', 'Settings']
+const baseNavItems = ['Dashboard', 'Incidents', 'Hosts']
 
 type FormState = {
   name: string
@@ -25,9 +25,10 @@ type SettingsViewProps = {
   onBack: () => void
   onSessionUpdate: (updates: Partial<Session>) => void
   onSignOut: () => void
+  onOpenUserManagement: () => void
 }
-
-export const SettingsView = ({ session, onBack, onSessionUpdate, onSignOut }: SettingsViewProps) => {
+export const SettingsView = ({ session, onBack, onSessionUpdate, onSignOut, onOpenUserManagement }: SettingsViewProps) => {
+  const navItems = session.role.toLowerCase() === 'admin' ? [...baseNavItems, 'User Management'] : baseNavItems
   const [profile, setProfile] = useState<ProfilePayload | null>(null)
   const [form, setForm] = useState<FormState>({
     name: session.name,
@@ -154,7 +155,7 @@ export const SettingsView = ({ session, onBack, onSessionUpdate, onSignOut }: Se
   }
 
   return (
-    <div className="dashboard-layout settings-layout">
+    <div className="settings-layout">
       <aside className="sidebar glass-card">
         <div className="sidebar-brand">
           <img src={logoAsset} alt="AlertFrog" className="logo-img" width={40} height={40} />
@@ -168,8 +169,14 @@ export const SettingsView = ({ session, onBack, onSessionUpdate, onSignOut }: Se
             {navItems.map((item) => (
               <li
                 key={item}
-                className={item === 'Settings' ? 'active' : ''}
-                onClick={item === 'Dashboard' ? onBack : undefined}
+                className={item === 'Dashboard' ? '' : ''}
+                onClick={
+                  item === 'Dashboard'
+                    ? onBack
+                    : item === 'User Management'
+                      ? onOpenUserManagement
+                      : undefined
+                }
               >
                 {item}
               </li>

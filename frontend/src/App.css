@@ -87,6 +87,22 @@ input:focus {
   box-shadow: 0 0 0 3px rgba(72, 199, 142, 0.25);
 }
 
+select {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(72, 199, 142, 0.25);
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+  color: inherit;
+  font-size: 1rem;
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+
+select:focus {
+  outline: none;
+  border-color: var(--frog-green);
+  box-shadow: 0 0 0 3px rgba(72, 199, 142, 0.25);
+}
+
 .frog-button {
   border: none;
   border-radius: 16px;
@@ -138,6 +154,14 @@ input:focus {
 }
 
 .dashboard-layout {
+  width: min(1100px, 100vw);
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 1.5rem;
+}
+
+.settings-layout,
+.management-layout {
   width: min(1100px, 100vw);
   display: grid;
   grid-template-columns: 240px 1fr;
@@ -207,6 +231,28 @@ input:focus {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+}
+
+.settings-panel,
+.management-panel {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.settings-form,
+.management-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.settings-actions,
+.management-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
 }
 
 .page-header {
@@ -324,10 +370,36 @@ input:focus {
   cursor: pointer;
 }
 
+.ghost.small {
+  padding: 0.35rem 0.85rem;
+  font-size: 0.85rem;
+  border-radius: 10px;
+}
+
+.button-danger {
+  color: #ff9f8f;
+  border-color: rgba(255, 159, 143, 0.5);
+}
+
+.success-text {
+  color: #7df5c5;
+  font-size: 0.85rem;
+}
+
+.table-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
 .grid {
   display: grid;
   gap: 1rem;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.grid.two-cols {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
 
 .stat-card {

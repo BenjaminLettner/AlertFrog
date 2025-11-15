@@ -5,9 +5,10 @@ type DashboardViewProps = {
   session: Session
   onSignOut: () => void
   onOpenSettings: () => void
+  onOpenUserManagement: () => void
 }
 
-const navItems = ['Dashboard', 'Incidents', 'Hosts', 'User Management']
+const baseNavItems = ['Dashboard', 'Incidents', 'Hosts']
 
 const stats = [
   { title: 'Active incidents', value: '12', accent: 'danger' },
@@ -23,7 +24,8 @@ const incidents = [
   { id: 'INC-004', title: 'Unauthorized Access', severity: 'HIGH', host: 'api-gateway-02', time: '1 hour ago' },
 ]
 
-export const DashboardView = ({ session, onSignOut, onOpenSettings }: DashboardViewProps) => {
+export const DashboardView = ({ session, onSignOut, onOpenSettings, onOpenUserManagement }: DashboardViewProps) => {
+  const navItems = session.role.toLowerCase() === 'admin' ? [...baseNavItems, 'User Management'] : baseNavItems
   return (
     <div className="dashboard-layout">
       <aside className="sidebar glass-card">
@@ -37,7 +39,11 @@ export const DashboardView = ({ session, onSignOut, onOpenSettings }: DashboardV
         <nav>
           <ul>
             {navItems.map((item) => (
-              <li key={item} className={item === 'Dashboard' ? 'active' : ''}>
+              <li
+                key={item}
+                className={item === 'Dashboard' ? 'active' : ''}
+                onClick={item === 'User Management' ? onOpenUserManagement : undefined}
+              >
                 {item}
               </li>
             ))}
