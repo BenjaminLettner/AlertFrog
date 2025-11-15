@@ -4,9 +4,10 @@ import logoAsset from '../assets/alertfrog-logo.png'
 type DashboardViewProps = {
   session: Session
   onSignOut: () => void
+  onOpenSettings: () => void
 }
 
-const navItems = ['Dashboard', 'Incidents', 'Hosts', 'User Management', 'Settings']
+const navItems = ['Dashboard', 'Incidents', 'Hosts', 'User Management']
 
 const stats = [
   { title: 'Active incidents', value: '12', accent: 'danger' },
@@ -22,7 +23,7 @@ const incidents = [
   { id: 'INC-004', title: 'Unauthorized Access', severity: 'HIGH', host: 'api-gateway-02', time: '1 hour ago' },
 ]
 
-export const DashboardView = ({ session, onSignOut }: DashboardViewProps) => {
+export const DashboardView = ({ session, onSignOut, onOpenSettings }: DashboardViewProps) => {
   return (
     <div className="dashboard-layout">
       <aside className="sidebar glass-card">
@@ -42,10 +43,10 @@ export const DashboardView = ({ session, onSignOut }: DashboardViewProps) => {
             ))}
           </ul>
         </nav>
-        <div className="sidebar-user">
+        <button className="sidebar-user" onClick={onOpenSettings}>
           <p className="sidebar-user__email">{session.email}</p>
           <p className="sidebar-user__role">{session.role}</p>
-        </div>
+        </button>
         <button className="ghost sidebar-signout" onClick={onSignOut}>
           Sign out
         </button>

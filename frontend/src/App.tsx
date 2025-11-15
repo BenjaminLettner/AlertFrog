@@ -3,8 +3,11 @@ import './App.css'
 import type { Session } from './types/session'
 import { LoginView } from './pages/LoginView'
 import { DashboardView } from './pages/DashboardView'
+import { SettingsView } from './pages/SettingsView'
 
 const STORAGE_KEY = 'alertfrog_session'
+
+type View = 'dashboard' | 'settings'
 
 function App() {
   const [session, setSession] = useState<Session | null>(() => {
@@ -23,20 +26,45 @@ function App() {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(session))
   }, [session])
 
+  const [view, setView] = useState<View>('dashboard')
+
   const handleLogin = (payload: Session) => {
     setSession(payload)
+    setView('dashboard')
   }
 
   const handleSignOut = () => {
     setSession(null)
+    setView('dashboard')
   }
+
+  const handleSessionUpdate = (updates: Partial<Session>) => {
+    setSession((prev) => (prev ? { ...prev, ...updates } : prev))
+  }
+
+  useEffect(() => {
+    if (!session) {
+      setView('dashboard')
+    }
+  }, [session])
 
   return (
     <div className="app-shell">
       {!session ? (
         <LoginView onLogin={handleLogin} />
+      ) : view === 'settings' ? (
+        <SettingsView
+          session={session}
+          onBack={() => setView('dashboard')}
+          onSessionUpdate={handleSessionUpdate}
+          onSignOut={handleSignOut}
+        />
       ) : (
-        <DashboardView session={session} onSignOut={handleSignOut} />
+        <DashboardView
+          session={session}
+          onSignOut={handleSignOut}
+          onOpenSettings={() => setView('settings')}
+        />
       )}
     </div>
   )

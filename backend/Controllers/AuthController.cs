@@ -32,6 +32,7 @@ public class AuthController(AlertFrogDbContext dbContext, IOptions<JwtOptions> j
 
         return Ok(new LoginResponse
         {
+            Id = user.Id,
             Token = token,
             Name = user.Name,
             Email = user.Email,
@@ -76,6 +77,7 @@ public class AuthController(AlertFrogDbContext dbContext, IOptions<JwtOptions> j
         var claims = new List<Claim>
         {
             new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new(JwtRegisteredClaimNames.Email, user.Email),
             new(ClaimTypes.Name, user.Name),
             new(ClaimTypes.Role, user.Role?.Name ?? SystemRoles.User)
