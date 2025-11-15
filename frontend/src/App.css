@@ -1,42 +1,334 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem;
+}
+
+.glass-card {
+  background: var(--frog-card);
+  border: 1px solid var(--frog-border);
+  border-radius: 20px;
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(24px);
+}
+
+.login-card {
+  width: min(420px, 95vw);
+  padding: 2.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.brand-mark {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.logo-dot {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--frog-green), #68f0be);
+  box-shadow: 0 10px 35px rgba(72, 199, 142, 0.55);
+}
+
+.eyebrow {
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+}
+
+.muted {
+  color: var(--frog-text-muted);
+}
+
+.stack.gap {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.input-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+  color: var(--frog-text-muted);
+}
+
+input {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(72, 199, 142, 0.25);
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+  color: inherit;
+  font-size: 1rem;
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--frog-green);
+  box-shadow: 0 0 0 3px rgba(72, 199, 142, 0.25);
+}
+
+.frog-button {
+  border: none;
+  border-radius: 16px;
+  background: linear-gradient(120deg, var(--frog-green), #2bd98e);
+  color: #052415;
+  font-weight: 600;
+  padding: 0.95rem 1.2rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.frog-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 15px 35px rgba(72, 199, 142, 0.35);
+}
+
+.frog-button.ghost {
+  background: rgba(72, 199, 142, 0.1);
+  color: var(--frog-green);
+  border: 1px solid rgba(72, 199, 142, 0.35);
+}
+
+.login-highlights {
+  list-style: none;
+  display: grid;
+  gap: 0.4rem;
+  padding: 0;
+  margin: 0;
+  color: var(--frog-text-muted);
+  font-size: 0.9rem;
+}
+
+.login-highlights li::before {
+  content: '•';
+  color: var(--frog-green);
+  margin-right: 0.4rem;
+}
+
+.error-text {
+  color: #ff9f8f;
+  font-size: 0.85rem;
+}
+
+.dashboard-shell {
+  width: min(960px, 95vw);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.dashboard-layout {
+  width: min(1100px, 100vw);
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 1.5rem;
+}
+
+.sidebar {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.sidebar nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 2rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.sidebar nav li {
+  padding: 0.65rem 0.75rem;
+  border-radius: 12px;
+  color: var(--frog-text-muted);
+  cursor: pointer;
+}
+
+.sidebar nav li.active,
+.sidebar nav li:hover {
+  background: rgba(72, 199, 142, 0.15);
+  color: #f3fff7;
+}
+
+.sidebar-signout {
+  width: 100%;
+}
+
+.main-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.avatar.large {
+  width: 56px;
+  height: 56px;
+  font-size: 1.25rem;
+}
+
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.stat-tile {
+  padding: 1.2rem;
+}
+
+.stat-tile h3 {
+  font-size: 1.75rem;
+  margin-top: 0.5rem;
+}
+
+.incidents-card {
+  padding: 1.5rem;
+}
+
+.incidents-card__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.table {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.table-row {
+  display: grid;
+  grid-template-columns: 0.8fr 2fr 1fr 1.2fr 1fr;
+  padding: 0.65rem 0.75rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  align-items: center;
+}
+
+.table-row.head {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.72rem;
+  color: var(--frog-text-muted);
+  background: transparent;
+}
+
+.severity {
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.severity.high {
+  background: rgba(255, 166, 43, 0.2);
+  color: #ffb347;
+}
+
+.severity.medium {
+  background: rgba(255, 214, 102, 0.2);
+  color: #ffd666;
+}
+
+.severity.critical {
+  background: rgba(255, 85, 85, 0.2);
+  color: #ff6b6b;
+}
+
+.dash-header {
   padding: 2rem;
-  text-align: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+.avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: rgba(72, 199, 142, 0.15);
+  display: grid;
+  place-items: center;
+  font-weight: 600;
+}
+
+.ghost {
+  background: transparent;
+  color: var(--frog-text-muted);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 0.7rem 1.1rem;
+  cursor: pointer;
+}
+
+.grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.stat-card {
+  padding: 1.5rem;
+}
+
+.stat-card h3 {
+  margin: 0.4rem 0;
+  font-size: 2rem;
+}
+
+.actions-card {
+  padding: 1.5rem;
+}
+
+.action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+
+@media (max-width: 768px) {
+  .app-shell {
+    padding: 1.5rem;
   }
-  to {
-    transform: rotate(360deg);
+
+  .dash-header {
+    flex-direction: column;
+    align-items: flex-start;
   }
-}
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+  .action-row {
+    flex-direction: column;
   }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
 }
