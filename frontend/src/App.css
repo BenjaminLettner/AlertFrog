@@ -156,18 +156,18 @@ select:focus {
 }
 
 .dashboard-layout {
-  width: min(1100px, 100vw);
+  width: min(1350px, 98vw);
   display: grid;
-  grid-template-columns: 240px 1fr;
-  gap: 1.5rem;
+  grid-template-columns: 260px minmax(0, 1fr);
+  gap: 1.75rem;
 }
 
 .settings-layout,
 .management-layout {
-  width: min(1100px, 100vw);
+  width: min(1350px, 98vw);
   display: grid;
-  grid-template-columns: 240px 1fr;
-  gap: 1.5rem;
+  grid-template-columns: 260px minmax(0, 1fr);
+  gap: 1.75rem;
 }
 
 .sidebar {
@@ -233,6 +233,7 @@ select:focus {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+  width: 100%;
 }
 
 .settings-panel,
@@ -241,6 +242,7 @@ select:focus {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  width: 100%;
 }
 
 .settings-form,
@@ -312,7 +314,7 @@ select:focus {
 
 .incidents-table .table-row,
 .incidents-table .table-row.head {
-  grid-template-columns: 2.4fr 0.9fr 1fr 1.1fr 1.3fr 1.2fr 1.2fr 1.2fr 1fr;
+  grid-template-columns: 2.8fr 1fr 1.1fr 1.2fr 1.4fr 1.2fr 1.2fr 1.2fr 1fr;
 }
 
 .users-table .table-row,
