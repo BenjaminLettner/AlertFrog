@@ -293,7 +293,7 @@ export const UserManagementView = ({ session, onBack, onOpenIncidents, onSignOut
           ) : users.length === 0 ? (
             <p className="muted">No users yet.</p>
           ) : (
-            <div className="table">
+            <div className="table users-table">
               <div className="table-row head">
                 <span>Name</span>
                 <span>Email</span>
