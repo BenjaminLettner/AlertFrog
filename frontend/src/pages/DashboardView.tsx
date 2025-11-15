@@ -28,7 +28,7 @@ export const DashboardView = ({ session, onSignOut, onOpenSettings }: DashboardV
     <div className="dashboard-layout">
       <aside className="sidebar glass-card">
         <div className="sidebar-brand">
-          <img src={logoAsset} alt="AlertFrog" className="logo-img" width={40} height={40} />
+          <img src={logoAsset} alt="AlertFrog" className="logo-img" width={60} height={60} />
           <div>
             <p className="eyebrow">SIMS</p>
             <strong>AlertFrog</strong>
