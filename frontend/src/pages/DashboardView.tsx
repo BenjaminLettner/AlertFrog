@@ -1,4 +1,5 @@
 import type { Session } from '../types/session'
+import logoAsset from '../assets/alertfrog-logo.png'
 
 type DashboardViewProps = {
   session: Session
@@ -26,7 +27,7 @@ export const DashboardView = ({ session, onSignOut }: DashboardViewProps) => {
     <div className="dashboard-layout">
       <aside className="sidebar glass-card">
         <div className="sidebar-brand">
-          <span className="logo-dot" />
+          <img src={logoAsset} alt="AlertFrog" className="logo-img" width={40} height={40} />
           <div>
             <p className="eyebrow">SIMS</p>
             <strong>AlertFrog</strong>
@@ -41,6 +42,10 @@ export const DashboardView = ({ session, onSignOut }: DashboardViewProps) => {
             ))}
           </ul>
         </nav>
+        <div className="sidebar-user">
+          <p className="sidebar-user__email">{session.email}</p>
+          <p className="sidebar-user__role">{session.role}</p>
+        </div>
         <button className="ghost sidebar-signout" onClick={onSignOut}>
           Sign out
         </button>
@@ -52,7 +57,6 @@ export const DashboardView = ({ session, onSignOut }: DashboardViewProps) => {
             <p className="eyebrow">Dashboard</p>
             <h1>Overview of your security infrastructure</h1>
           </div>
-          <span className="avatar large">{session.name.at(0)}</span>
         </header>
 
         <section className="stats-row">

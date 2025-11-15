@@ -49,7 +49,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
       ASPNETCORE_URLS: http://0.0.0.0:8080
-      ConnectionStrings__Default: Server=mysql;Port=3306;Database=${MYSQL_DATABASE};User=${MYSQL_USER};Password=${MYSQL_PASSWORD};TreatTinyAsBoolean=false;SslMode=None;
+      ConnectionStrings__Default: Server=mysql;Port=3306;Database=${MYSQL_DATABASE};User=${MYSQL_USER};Password=${MYSQL_PASSWORD};TreatTinyAsBoolean=false;SslMode=None;AllowPublicKeyRetrieval=True;
       Redis__ConnectionString: ${REDIS_HOST}:${REDIS_PORT}
       JWT__Issuer: ${JWT_ISSUER}
       JWT__Audience: ${JWT_AUDIENCE}

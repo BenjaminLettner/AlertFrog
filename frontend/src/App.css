@@ -28,6 +28,17 @@
   gap: 1rem;
 }
 
+.logo-img {
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(72, 199, 142, 0.35);
+  object-fit: contain;
+}
+
+.logo-img.hero {
+  width: 88px;
+  height: 88px;
+}
+
 .logo-dot {
   width: 48px;
   height: 48px;
@@ -143,7 +154,7 @@ input:focus {
 .sidebar-brand {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 1rem;
 }
 
 .sidebar nav ul {
@@ -166,6 +177,26 @@ input:focus {
 .sidebar nav li:hover {
   background: rgba(72, 199, 142, 0.15);
   color: #f3fff7;
+}
+
+.sidebar-user {
+  margin-top: auto;
+  margin-bottom: 1rem;
+}
+
+.sidebar-user__email {
+  margin: 0.25rem 0 0;
+  font-weight: 600;
+  color: #f4fff8;
+  word-break: break-all;
+}
+
+.sidebar-user__role {
+  margin: 0.15rem 0 0;
+  font-size: 0.85rem;
+  color: var(--frog-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 .sidebar-signout {
