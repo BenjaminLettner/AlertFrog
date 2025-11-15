@@ -1,4 +1,6 @@
+import { useMemo } from 'react'
 import type { Session } from '../types/session'
+import { useIncidents } from '../hooks/useIncidents'
 import logoAsset from '../assets/alertfrog-logo.png'
 
 type DashboardViewProps = {
@@ -6,26 +8,58 @@ type DashboardViewProps = {
   onSignOut: () => void
   onOpenSettings: () => void
   onOpenUserManagement: () => void
+  onOpenIncidents: () => void
 }
 
-const baseNavItems = ['Dashboard', 'Incidents', 'Hosts']
+const baseNavItems = ['Dashboard', 'Incidents']
 
-const stats = [
-  { title: 'Active incidents', value: '12', accent: 'danger' },
-  { title: 'Monitored hosts', value: '48', accent: 'neutral' },
-  { title: 'Resolved today', value: '7', accent: 'info' },
-  { title: 'System health', value: '98%', accent: 'success' },
-]
+export const DashboardView = ({
+  session,
+  onSignOut,
+  onOpenSettings,
+  onOpenUserManagement,
+  onOpenIncidents,
+}: DashboardViewProps) => {
+  const { incidents, loading, error, escalatingId, escalateIncident } = useIncidents(session.token)
 
-const incidents = [
-  { id: 'INC-001', title: 'Suspicious Login Attempt', severity: 'HIGH', host: 'web-server-01', time: '5 min ago' },
-  { id: 'INC-002', title: 'Port Scan Detected', severity: 'MEDIUM', host: 'db-server-03', time: '12 min ago' },
-  { id: 'INC-003', title: 'Malware Signature Found', severity: 'CRITICAL', host: 'workstation-15', time: '23 min ago' },
-  { id: 'INC-004', title: 'Unauthorized Access', severity: 'HIGH', host: 'api-gateway-02', time: '1 hour ago' },
-]
+  const navItems = useMemo(() => {
+    return session.role.toLowerCase() === 'admin' ? [...baseNavItems, 'User Management'] : baseNavItems
+  }, [session.role])
 
-export const DashboardView = ({ session, onSignOut, onOpenSettings, onOpenUserManagement }: DashboardViewProps) => {
-  const navItems = session.role.toLowerCase() === 'admin' ? [...baseNavItems, 'User Management'] : baseNavItems
+  const stats = useMemo(() => {
+    if (loading) {
+      return [
+        { title: 'Active incidents', value: '—' },
+        { title: 'Resolved today', value: '—' },
+      ]
+    }
+
+    const activeCount = incidents.filter((incident) => incident.status.toLowerCase() !== 'resolved').length
+    const resolvedToday = incidents.filter((incident) => {
+      if (incident.status.toLowerCase() !== 'resolved') return false
+      const created = new Date(incident.createdAt)
+      const now = new Date()
+      return (
+        created.getUTCFullYear() === now.getUTCFullYear() &&
+        created.getUTCMonth() === now.getUTCMonth() &&
+        created.getUTCDate() === now.getUTCDate()
+      )
+    }).length
+
+    return [
+      { title: 'Active incidents', value: String(activeCount) },
+      { title: 'Resolved today', value: String(resolvedToday) },
+    ]
+  }, [incidents, loading])
+
+  const formatTimestamp = (value: string) =>
+    new Date(value).toLocaleString(undefined, {
+      hour: '2-digit',
+      minute: '2-digit',
+      day: '2-digit',
+      month: 'short',
+    })
+
   return (
     <div className="dashboard-layout">
       <aside className="sidebar glass-card">
@@ -42,7 +76,12 @@ export const DashboardView = ({ session, onSignOut, onOpenSettings, onOpenUserMa
               <li
                 key={item}
                 className={item === 'Dashboard' ? 'active' : ''}
-                onClick={item === 'User Management' ? onOpenUserManagement : undefined}
+                onClick=
+                  {item === 'User Management'
+                    ? onOpenUserManagement
+                    : item === 'Incidents'
+                      ? onOpenIncidents
+                      : undefined}
               >
                 {item}
               </li>
@@ -78,33 +117,73 @@ export const DashboardView = ({ session, onSignOut, onOpenSettings, onOpenUserMa
         <section className="glass-card incidents-card">
           <div className="incidents-card__head">
             <div>
-              <h4>Recent Incidents</h4>
-              <p className="muted">Realtime feed from your SOC.</p>
+              <h4>Incidents</h4>
+              <p className="muted">Track responders, systems, and escalation paths.</p>
             </div>
-            <button className="frog-button ghost">View all</button>
+            {error && <p className="error-text" role="alert">{error}</p>}
           </div>
-          <div className="table">
-            <div className="table-row head">
-              <span>ID</span>
-              <span>Title</span>
-              <span>Severity</span>
-              <span>Host</span>
-              <span>Time</span>
-            </div>
-            {incidents.map((incident) => (
-              <div key={incident.id} className="table-row">
-                <span>{incident.id}</span>
-                <span>{incident.title}</span>
-                <span>
-                  <span className={`severity ${incident.severity.toLowerCase()}`}>
-                    {incident.severity}
-                  </span>
-                </span>
-                <span>{incident.host}</span>
-                <span>{incident.time}</span>
+          {loading ? (
+            <p className="muted">Loading incidents…</p>
+          ) : incidents.length === 0 ? (
+            <p className="muted">No incidents are currently open.</p>
+          ) : (
+            <div className="table incidents-table">
+              <div className="table-row head">
+                <span>Title</span>
+                <span>Severity</span>
+                <span>Status</span>
+                <span>CVE</span>
+                <span>Affected system</span>
+                <span>Assigned</span>
+                <span>Registrant</span>
+                <span>Timestamp</span>
+                <span></span>
               </div>
-            ))}
-          </div>
+              {incidents.map((incident) => (
+                <div key={incident.id} className="table-row">
+                  <span>
+                    <strong>{incident.title}</strong>
+                    <p className="muted description-text">{incident.description}</p>
+                  </span>
+                  <span>
+                    <span className={`severity ${incident.severity.toLowerCase()}`}>
+                      {incident.severity}
+                    </span>
+                  </span>
+                  <span>
+                    <span className={`status-chip status-${incident.status.toLowerCase()}`}>
+                      {incident.status}
+                    </span>
+                  </span>
+                  <span>{incident.cve ?? '—'}</span>
+                  <span>{incident.affectedSystem ?? '—'}</span>
+                  <span>
+                    <span className="assigned-name">{incident.assignedUserName}</span>
+                    <span className="assigned-role">{incident.assignedUserRole}</span>
+                  </span>
+                  <span>
+                    <span className="assigned-name">{incident.registrantName}</span>
+                    <span className="assigned-role muted">Registrant</span>
+                  </span>
+                  <span>{formatTimestamp(incident.createdAt)}</span>
+                  <span className="table-actions">
+                    {incident.canEscalate ? (
+                      <button
+                        className="ghost small"
+                        type="button"
+                        onClick={() => escalateIncident(incident.id)}
+                        disabled={escalatingId === incident.id}
+                      >
+                        {escalatingId === incident.id ? 'Escalating…' : 'Escalate'}
+                      </button>
+                    ) : (
+                      <span className="muted">Max level</span>
+                    )}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
         </section>
       </main>
     </div>

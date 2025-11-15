@@ -4,7 +4,7 @@ import logoAsset from '../assets/alertfrog-logo.png'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080'
 
-const baseNavItems = ['Dashboard', 'Incidents', 'Hosts']
+const baseNavItems = ['Dashboard', 'Incidents']
 
 type FormState = {
   name: string
@@ -26,8 +26,16 @@ type SettingsViewProps = {
   onSessionUpdate: (updates: Partial<Session>) => void
   onSignOut: () => void
   onOpenUserManagement: () => void
+  onOpenIncidents: () => void
 }
-export const SettingsView = ({ session, onBack, onSessionUpdate, onSignOut, onOpenUserManagement }: SettingsViewProps) => {
+export const SettingsView = ({
+  session,
+  onBack,
+  onSessionUpdate,
+  onSignOut,
+  onOpenUserManagement,
+  onOpenIncidents,
+}: SettingsViewProps) => {
   const navItems = session.role.toLowerCase() === 'admin' ? [...baseNavItems, 'User Management'] : baseNavItems
   const [profile, setProfile] = useState<ProfilePayload | null>(null)
   const [form, setForm] = useState<FormState>({
@@ -169,13 +177,15 @@ export const SettingsView = ({ session, onBack, onSessionUpdate, onSignOut, onOp
             {navItems.map((item) => (
               <li
                 key={item}
-                className={item === 'Dashboard' ? '' : ''}
+                className={item === 'Dashboard' ? '' : item === 'Incidents' ? '' : ''}
                 onClick={
                   item === 'Dashboard'
                     ? onBack
                     : item === 'User Management'
                       ? onOpenUserManagement
-                      : undefined
+                      : item === 'Incidents'
+                        ? onOpenIncidents
+                        : undefined
                 }
               >
                 {item}

@@ -4,16 +4,19 @@ using Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Backend.Migrations
+namespace Backend.backend.Migrations
 {
     [DbContext(typeof(AlertFrogDbContext))]
-    partial class AlertFrogDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251115145017_AddIncidents")]
+    partial class AddIncidents
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -46,9 +49,6 @@ namespace Backend.Migrations
 
                     b.Property<Guid>("RegistrantUserId")
                         .HasColumnType("char(36)");
-
-                    b.Property<DateTime?>("ResolvedAt")
-                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Severity")
                         .IsRequired()

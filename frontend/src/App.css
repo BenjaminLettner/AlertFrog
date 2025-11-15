@@ -71,7 +71,8 @@
   color: var(--frog-text-muted);
 }
 
-input {
+input,
+textarea {
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(72, 199, 142, 0.25);
   border-radius: 12px;
@@ -81,7 +82,8 @@ input {
   transition: border 0.2s ease, box-shadow 0.2s ease;
 }
 
-input:focus {
+input:focus,
+textarea:focus {
   outline: none;
   border-color: var(--frog-green);
   box-shadow: 0 0 0 3px rgba(72, 199, 142, 0.25);
@@ -300,11 +302,16 @@ select:focus {
 
 .table-row {
   display: grid;
-  grid-template-columns: 0.8fr 2fr 1fr 1.2fr 1fr;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   padding: 0.65rem 0.75rem;
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.02);
   align-items: center;
+}
+
+.incidents-table .table-row,
+.incidents-table .table-row.head {
+  grid-template-columns: 2.1fr 0.9fr 0.9fr 0.9fr 1.1fr 1.3fr 1.3fr 1.3fr 0.8fr;
 }
 
 .table-row.head {
@@ -335,6 +342,48 @@ select:focus {
 .severity.critical {
   background: rgba(255, 85, 85, 0.2);
   color: #ff6b6b;
+}
+
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.3rem 0.7rem;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.status-open {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fefefe;
+}
+
+.status-investigating {
+  background: rgba(255, 166, 43, 0.18);
+  color: #ffb347;
+}
+
+.description-text {
+  margin: 0.15rem 0 0;
+  font-size: 0.8rem;
+}
+
+.assigned-name {
+  display: block;
+  font-weight: 600;
+}
+
+.assigned-role {
+  display: block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--frog-text-muted);
+}
+
+.incidents-card .muted {
+  font-size: 0.85rem;
 }
 
 .dash-header {

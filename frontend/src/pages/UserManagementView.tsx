@@ -5,11 +5,12 @@ import type { UserSummary } from '../types/user'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080'
 
-const baseNavItems = ['Dashboard', 'Incidents', 'Hosts']
+const baseNavItems = ['Dashboard', 'Incidents']
 
 type UserManagementViewProps = {
   session: Session
   onBack: () => void
+  onOpenIncidents: () => void
   onSignOut: () => void
 }
 
@@ -29,7 +30,7 @@ const emptyForm: FormState = {
   password: '',
 }
 
-export const UserManagementView = ({ session, onBack, onSignOut }: UserManagementViewProps) => {
+export const UserManagementView = ({ session, onBack, onOpenIncidents, onSignOut }: UserManagementViewProps) => {
   const [users, setUsers] = useState<UserSummary[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -189,8 +190,14 @@ export const UserManagementView = ({ session, onBack, onSignOut }: UserManagemen
             {navItems.map((item) => (
               <li
                 key={item}
-                className={item === 'Dashboard' ? '' : item === 'User Management' ? 'active' : ''}
-                onClick={item === 'Dashboard' ? onBack : undefined}
+                className={item === 'User Management' ? 'active' : ''}
+                onClick={
+                  item === 'Dashboard'
+                    ? onBack
+                    : item === 'Incidents'
+                      ? onOpenIncidents
+                      : undefined
+                }
               >
                 {item}
               </li>

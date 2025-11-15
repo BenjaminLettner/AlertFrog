@@ -5,10 +5,11 @@ import { LoginView } from './pages/LoginView'
 import { DashboardView } from './pages/DashboardView'
 import { SettingsView } from './pages/SettingsView'
 import { UserManagementView } from './pages/UserManagementView'
+import { IncidentsView } from './pages/IncidentsView'
 
 const STORAGE_KEY = 'alertfrog_session'
 
-type View = 'dashboard' | 'settings' | 'userManagement'
+type View = 'dashboard' | 'incidents' | 'settings' | 'userManagement'
 
 function App() {
   const [session, setSession] = useState<Session | null>(() => {
@@ -60,11 +61,21 @@ function App() {
           onSessionUpdate={handleSessionUpdate}
           onSignOut={handleSignOut}
           onOpenUserManagement={() => setView('userManagement')}
+          onOpenIncidents={() => setView('incidents')}
+        />
+      ) : view === 'incidents' ? (
+        <IncidentsView
+          session={session}
+          onGoDashboard={() => setView('dashboard')}
+          onOpenSettings={() => setView('settings')}
+          onOpenUserManagement={() => setView('userManagement')}
+          onSignOut={handleSignOut}
         />
       ) : view === 'userManagement' ? (
         <UserManagementView
           session={session}
           onBack={() => setView('dashboard')}
+          onOpenIncidents={() => setView('incidents')}
           onSignOut={handleSignOut}
         />
       ) : (
@@ -73,6 +84,7 @@ function App() {
           onSignOut={handleSignOut}
           onOpenSettings={() => setView('settings')}
           onOpenUserManagement={() => setView('userManagement')}
+          onOpenIncidents={() => setView('incidents')}
         />
       )}
     </div>
