@@ -10,6 +10,7 @@ type IncidentsViewProps = {
   onGoDashboard: () => void
   onOpenSettings: () => void
   onOpenUserManagement: () => void
+  onOpenLogs?: () => void
   onSignOut: () => void
 }
 
@@ -38,10 +39,13 @@ export const IncidentsView = ({
   onGoDashboard,
   onOpenSettings,
   onOpenUserManagement,
+  onOpenLogs,
   onSignOut,
 }: IncidentsViewProps) => {
   const navItems = useMemo(() => {
-    return session.role.toLowerCase() === 'admin' ? [...baseNavItems, 'User Management'] : baseNavItems
+    return session.role.toLowerCase() === 'admin'
+      ? [...baseNavItems, 'User Management', 'Logs']
+      : baseNavItems
   }, [session.role])
 
   const {
@@ -225,7 +229,9 @@ export const IncidentsView = ({
                     ? onGoDashboard
                     : item === 'User Management'
                       ? onOpenUserManagement
-                      : undefined
+                      : item === 'Logs'
+                        ? onOpenLogs
+                        : undefined
                 }
               >
                 {item}

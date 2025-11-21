@@ -4,6 +4,7 @@ using Backend.Data;
 using Backend.Models;
 using Backend.Requests;
 using Backend.Responses;
+using Backend.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +14,7 @@ namespace Backend.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
-public class IncidentsController(AlertFrogDbContext dbContext) : ControllerBase
+public class IncidentsController(AlertFrogDbContext dbContext, AuditLogService auditLog) : ControllerBase
 {
     private const string ManageIncidentRoles = SystemRoles.Admin + "," + SystemRoles.FirstLevel + "," + SystemRoles.SecondLevel;
 
@@ -76,6 +77,14 @@ public class IncidentsController(AlertFrogDbContext dbContext) : ControllerBase
 
         dbContext.Incidents.Add(incident);
         await dbContext.SaveChangesAsync();
+
+        await auditLog.LogAsync(
+            action: "Incident Created",
+            actorEmail: currentUser.Email,
+            actorRole: currentUser.Role?.Name ?? SystemRoles.User,
+            targetEntity: $"Incident: {incident.Title}",
+            details: $"Severity: {incident.Severity}, Status: {incident.Status}"
+        );
 
         return CreatedAtAction(nameof(GetIncidents), null, MapIncident(incident));
     }
@@ -142,6 +151,15 @@ public class IncidentsController(AlertFrogDbContext dbContext) : ControllerBase
 
         await dbContext.SaveChangesAsync();
 
+        var currentUser = await GetCurrentUserAsync();
+        await auditLog.LogAsync(
+            action: "Incident Updated",
+            actorEmail: currentUser?.Email ?? "system",
+            actorRole: currentUser?.Role?.Name ?? SystemRoles.User,
+            targetEntity: $"Incident: {incident.Title}",
+            details: $"Updated incident details"
+        );
+
         return MapIncident(incident);
     }
 
@@ -165,6 +183,15 @@ public class IncidentsController(AlertFrogDbContext dbContext) : ControllerBase
 
         await dbContext.SaveChangesAsync();
 
+        var currentUser = await GetCurrentUserAsync();
+        await auditLog.LogAsync(
+            action: "Incident Resolved",
+            actorEmail: currentUser?.Email ?? "system",
+            actorRole: currentUser?.Role?.Name ?? SystemRoles.User,
+            targetEntity: $"Incident: {incident.Title}",
+            details: "Incident marked as resolved"
+        );
+
         return MapIncident(incident);
     }
 
@@ -178,8 +205,19 @@ public class IncidentsController(AlertFrogDbContext dbContext) : ControllerBase
             return NotFound();
         }
 
+        var currentUser = await GetCurrentUserAsync();
+        var incidentTitle = incident.Title;
+        
         dbContext.Incidents.Remove(incident);
         await dbContext.SaveChangesAsync();
+
+        await auditLog.LogAsync(
+            action: "Incident Deleted",
+            actorEmail: currentUser?.Email ?? "system",
+            actorRole: currentUser?.Role?.Name ?? SystemRoles.Admin,
+            targetEntity: $"Incident: {incidentTitle}",
+            details: "Incident removed from system"
+        );
 
         return NoContent();
     }
@@ -213,6 +251,15 @@ public class IncidentsController(AlertFrogDbContext dbContext) : ControllerBase
         incident.UpdatedAt = DateTime.UtcNow;
 
         await dbContext.SaveChangesAsync();
+
+        var currentUser = await GetCurrentUserAsync();
+        await auditLog.LogAsync(
+            action: "Incident Escalated",
+            actorEmail: currentUser?.Email ?? "system",
+            actorRole: currentUser?.Role?.Name ?? SystemRoles.User,
+            targetEntity: $"Incident: {incident.Title}",
+            details: $"Escalated to {nextAssignee.Name} ({nextAssignee.Role?.Name})"
+        );
 
         return MapIncident(incident);
     }

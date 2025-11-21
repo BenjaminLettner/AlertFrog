@@ -7,6 +7,7 @@ using Backend.Models;
 using Backend.Options;
 using Backend.Requests;
 using Backend.Responses;
+using Backend.Services;
 using BCrypt.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +18,7 @@ namespace Backend.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AuthController(AlertFrogDbContext dbContext, IOptions<JwtOptions> jwtOptions) : ControllerBase
+public class AuthController(AlertFrogDbContext dbContext, IOptions<JwtOptions> jwtOptions, AuditLogService auditLog) : ControllerBase
 {
     [HttpPost("login")]
     public async Task<ActionResult<LoginResponse>> Login(LoginRequest request)
@@ -29,6 +30,13 @@ public class AuthController(AlertFrogDbContext dbContext, IOptions<JwtOptions> j
         }
 
         var token = GenerateToken(user);
+
+        await auditLog.LogAsync(
+            action: "User Login",
+            actorEmail: user.Email,
+            actorRole: user.Role?.Name ?? SystemRoles.User,
+            details: $"Successful login from {HttpContext.Connection.RemoteIpAddress}"
+        );
 
         return Ok(new LoginResponse
         {

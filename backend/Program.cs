@@ -1,13 +1,16 @@
 using System.Text;
 using Backend.Data;
 using Backend.Options;
+using Backend.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
+builder.Services.Configure<RedisOptions>(builder.Configuration.GetSection("Redis"));
 
 var connectionString = builder.Configuration.GetConnectionString("Default")
                       ?? throw new InvalidOperationException("Connection string 'Default' not found.");
@@ -33,6 +36,12 @@ builder.Services.AddCors(options =>
 // Add services to the container.
 builder.Services.AddDbContext<AlertFrogDbContext>(options =>
     options.UseMySql(connectionString, serverVersion, builder => builder.EnableRetryOnFailure()));
+
+var redisConnectionString = builder.Configuration.GetSection("Redis")["ConnectionString"]
+                           ?? throw new InvalidOperationException("Redis connection string not found.");
+
+builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisConnectionString));
+builder.Services.AddScoped<AuditLogService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

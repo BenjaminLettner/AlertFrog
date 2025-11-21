@@ -4,6 +4,7 @@ using Backend.Constants;
 using Backend.Data;
 using Backend.Requests;
 using Backend.Responses;
+using Backend.Services;
 using BCrypt.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +15,7 @@ namespace Backend.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
-public class UsersController(AlertFrogDbContext dbContext) : ControllerBase
+public class UsersController(AlertFrogDbContext dbContext, AuditLogService auditLog) : ControllerBase
 {
     [HttpGet("me")]
     public async Task<ActionResult<ProfileResponse>> GetProfile()
@@ -79,6 +80,15 @@ public class UsersController(AlertFrogDbContext dbContext) : ControllerBase
         dbContext.Users.Add(user);
         await dbContext.SaveChangesAsync();
 
+        var actor = await GetCurrentUserAsync();
+        await auditLog.LogAsync(
+            action: "User Created",
+            actorEmail: actor?.Email ?? "system",
+            actorRole: actor?.Role?.Name ?? "Admin",
+            targetEntity: $"User: {user.Email}",
+            details: $"Created user with role {role.Name}"
+        );
+
         return CreatedAtAction(nameof(GetUsers), new { id = user.Id }, new UserSummaryResponse
         {
             Id = user.Id,
@@ -132,6 +142,15 @@ public class UsersController(AlertFrogDbContext dbContext) : ControllerBase
 
         await dbContext.SaveChangesAsync();
 
+        var actor = await GetCurrentUserAsync();
+        await auditLog.LogAsync(
+            action: "User Updated",
+            actorEmail: actor?.Email ?? "system",
+            actorRole: actor?.Role?.Name ?? "Admin",
+            targetEntity: $"User: {user.Email}",
+            details: $"Updated user details"
+        );
+
         return new UserSummaryResponse
         {
             Id = user.Id,
@@ -152,8 +171,19 @@ public class UsersController(AlertFrogDbContext dbContext) : ControllerBase
             return NotFound();
         }
 
+        var actor = await GetCurrentUserAsync();
+        var targetEmail = user.Email;
+        
         dbContext.Users.Remove(user);
         await dbContext.SaveChangesAsync();
+
+        await auditLog.LogAsync(
+            action: "User Deleted",
+            actorEmail: actor?.Email ?? "system",
+            actorRole: actor?.Role?.Name ?? "Admin",
+            targetEntity: $"User: {targetEmail}",
+            details: "User removed from system"
+        );
 
         return NoContent();
     }

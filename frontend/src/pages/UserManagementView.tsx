@@ -11,6 +11,7 @@ type UserManagementViewProps = {
   session: Session
   onBack: () => void
   onOpenIncidents: () => void
+  onOpenLogs?: () => void
   onSignOut: () => void
 }
 
@@ -30,7 +31,7 @@ const emptyForm: FormState = {
   password: '',
 }
 
-export const UserManagementView = ({ session, onBack, onOpenIncidents, onSignOut }: UserManagementViewProps) => {
+export const UserManagementView = ({ session, onBack, onOpenIncidents, onOpenLogs, onSignOut }: UserManagementViewProps) => {
   const [users, setUsers] = useState<UserSummary[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -39,7 +40,9 @@ export const UserManagementView = ({ session, onBack, onOpenIncidents, onSignOut
   const [isSaving, setIsSaving] = useState(false)
 
   const navItems = useMemo(() => {
-    return session.role.toLowerCase() === 'admin' ? [...baseNavItems, 'User Management'] : baseNavItems
+    return session.role.toLowerCase() === 'admin'
+      ? [...baseNavItems, 'User Management', 'Logs']
+      : baseNavItems
   }, [session.role])
 
   useEffect(() => {
@@ -196,7 +199,9 @@ export const UserManagementView = ({ session, onBack, onOpenIncidents, onSignOut
                     ? onBack
                     : item === 'Incidents'
                       ? onOpenIncidents
-                      : undefined
+                      : item === 'Logs'
+                        ? onOpenLogs
+                        : undefined
                 }
               >
                 {item}
@@ -251,6 +256,8 @@ export const UserManagementView = ({ session, onBack, onOpenIncidents, onSignOut
               Role
               <select value={form.role} onChange={(e) => handleChange('role', e.target.value)} disabled={isSaving}>
                 <option value="Admin">Admin</option>
+                <option value="1st Level">1st Level</option>
+                <option value="2nd Level">2nd Level</option>
                 <option value="User">User</option>
               </select>
             </label>

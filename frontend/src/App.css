@@ -322,6 +322,16 @@ select:focus {
   grid-template-columns: 1.4fr 1.8fr 1fr 1fr 0.8fr;
 }
 
+.logs-table .table-row,
+.logs-table .table-row.head {
+  grid-template-columns: 1.5fr 1.2fr 1.5fr 0.8fr 1.5fr 2fr;
+}
+
+.log-action {
+  font-weight: 600;
+  color: var(--frog-primary);
+}
+
 .table-row.head {
   text-transform: uppercase;
   letter-spacing: 0.08em;

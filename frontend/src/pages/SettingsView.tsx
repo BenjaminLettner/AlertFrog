@@ -6,6 +6,16 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080
 
 const baseNavItems = ['Dashboard', 'Incidents']
 
+type SettingsViewProps = {
+  session: Session
+  onBack: () => void
+  onSessionUpdate: (updates: Partial<Session>) => void
+  onSignOut: () => void
+  onOpenUserManagement: () => void
+  onOpenIncidents: () => void
+  onOpenLogs?: () => void
+}
+
 type FormState = {
   name: string
   email: string
@@ -20,14 +30,6 @@ type ProfilePayload = {
   role: string
 }
 
-type SettingsViewProps = {
-  session: Session
-  onBack: () => void
-  onSessionUpdate: (updates: Partial<Session>) => void
-  onSignOut: () => void
-  onOpenUserManagement: () => void
-  onOpenIncidents: () => void
-}
 export const SettingsView = ({
   session,
   onBack,
@@ -35,8 +37,14 @@ export const SettingsView = ({
   onSignOut,
   onOpenUserManagement,
   onOpenIncidents,
+  onOpenLogs,
 }: SettingsViewProps) => {
-  const navItems = session.role.toLowerCase() === 'admin' ? [...baseNavItems, 'User Management'] : baseNavItems
+  const navItems = useMemo(() => {
+    return session.role.toLowerCase() === 'admin'
+      ? [...baseNavItems, 'User Management', 'Logs']
+      : baseNavItems
+  }, [session.role])
+
   const [profile, setProfile] = useState<ProfilePayload | null>(null)
   const [form, setForm] = useState<FormState>({
     name: session.name,
@@ -185,7 +193,9 @@ export const SettingsView = ({
                       ? onOpenUserManagement
                       : item === 'Incidents'
                         ? onOpenIncidents
-                        : undefined
+                        : item === 'Logs'
+                          ? onOpenLogs
+                          : undefined
                 }
               >
                 {item}

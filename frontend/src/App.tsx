@@ -6,10 +6,11 @@ import { DashboardView } from './pages/DashboardView'
 import { SettingsView } from './pages/SettingsView'
 import { UserManagementView } from './pages/UserManagementView'
 import { IncidentsView } from './pages/IncidentsView'
+import { LogsView } from './pages/LogsView'
 
 const STORAGE_KEY = 'alertfrog_session'
 
-type View = 'dashboard' | 'incidents' | 'settings' | 'userManagement'
+type View = 'dashboard' | 'incidents' | 'settings' | 'userManagement' | 'logs'
 
 function App() {
   const [session, setSession] = useState<Session | null>(() => {
@@ -62,6 +63,7 @@ function App() {
           onSignOut={handleSignOut}
           onOpenUserManagement={() => setView('userManagement')}
           onOpenIncidents={() => setView('incidents')}
+          onOpenLogs={() => setView('logs')}
         />
       ) : view === 'incidents' ? (
         <IncidentsView
@@ -69,12 +71,23 @@ function App() {
           onGoDashboard={() => setView('dashboard')}
           onOpenSettings={() => setView('settings')}
           onOpenUserManagement={() => setView('userManagement')}
+          onOpenLogs={() => setView('logs')}
           onSignOut={handleSignOut}
         />
       ) : view === 'userManagement' ? (
         <UserManagementView
           session={session}
           onBack={() => setView('dashboard')}
+          onOpenIncidents={() => setView('incidents')}
+          onOpenLogs={() => setView('logs')}
+          onSignOut={handleSignOut}
+        />
+      ) : view === 'logs' ? (
+        <LogsView
+          session={session}
+          onGoDashboard={() => setView('dashboard')}
+          onOpenSettings={() => setView('settings')}
+          onOpenUserManagement={() => setView('userManagement')}
           onOpenIncidents={() => setView('incidents')}
           onSignOut={handleSignOut}
         />
@@ -85,6 +98,7 @@ function App() {
           onOpenSettings={() => setView('settings')}
           onOpenUserManagement={() => setView('userManagement')}
           onOpenIncidents={() => setView('incidents')}
+          onOpenLogs={() => setView('logs')}
         />
       )}
     </div>

@@ -9,6 +9,7 @@ type DashboardViewProps = {
   onOpenSettings: () => void
   onOpenUserManagement: () => void
   onOpenIncidents: () => void
+  onOpenLogs?: () => void
 }
 
 const baseNavItems = ['Dashboard', 'Incidents']
@@ -19,11 +20,14 @@ export const DashboardView = ({
   onOpenSettings,
   onOpenUserManagement,
   onOpenIncidents,
+  onOpenLogs,
 }: DashboardViewProps) => {
   const { incidents, loading, error, escalatingId, escalateIncident } = useIncidents(session.token)
 
   const navItems = useMemo(() => {
-    return session.role.toLowerCase() === 'admin' ? [...baseNavItems, 'User Management'] : baseNavItems
+    return session.role.toLowerCase() === 'admin'
+      ? [...baseNavItems, 'User Management', 'Logs']
+      : baseNavItems
   }, [session.role])
 
   const stats = useMemo(() => {
@@ -81,7 +85,9 @@ export const DashboardView = ({
                     ? onOpenUserManagement
                     : item === 'Incidents'
                       ? onOpenIncidents
-                      : undefined}
+                      : item === 'Logs'
+                        ? onOpenLogs
+                        : undefined}
               >
                 {item}
               </li>
