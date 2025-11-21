@@ -69,11 +69,12 @@ The frontend consumes these APIs via `fetch` and central hooks. Session state li
 ![Layered Architecture](assets/architecture-layered.png)
 
 #### Incident Creation Flow
-Step-by-step data flow for creating an incident:
 
 ![Flow Diagram](assets/architecture-flow.png)
 
-For the detailed UML class diagram with all properties and methods, see the [Full UML Diagram](docs/UML-Diagram.md).
+For detailed architecture documentation and additional diagrams, see:
+- [Simplified Architecture Diagrams](docs/UML-Diagram-Simplified.md) - Recommended overview
+- [Full UML Class Diagram](docs/UML-Diagram.md) - Complete technical reference
 
 ## Tech stack
 
