@@ -41,22 +41,32 @@ _Security Incident Management System (SIMS) built for SOC teams that need authen
 
 ```
 ├── backend/            # ASP.NET Core 8 WebAPI
-│   ├── Controllers     # Auth, Users, Incidents
+│   ├── Controllers     # Auth, Users, Incidents, Logs
 │   ├── Data            # DbContext + DbSeeder + EF migrations
-│   ├── Models/Requests/Responses
-│   └── Options         # JWT configuration binding
+│   ├── Models          # User, Role, Incident domain entities
+│   ├── Services        # AuditLogService (Redis-backed logging)
+│   ├── Requests        # API request DTOs
+│   ├── Responses       # API response DTOs
+│   ├── Options         # JWT + Redis configuration binding
+│   └── Constants       # SystemRoles with GUIDs
 ├── frontend/           # React 18 + TypeScript + Vite SPA
-│   ├── src/pages       # Login, Dashboard, Incidents, Settings, User Mgmt
+│   ├── src/pages       # Login, Dashboard, Incidents, Settings, User Mgmt, Logs
 │   ├── src/hooks       # useIncidents, session helpers
 │   └── src/types       # Shared DTO definitions
 ├── infra/              # docker-compose.yml, env templates
-├── docs/               # Project plan & architecture notes
+├── docs/               # Project plan, architecture notes, UML diagram
 └── assets/             # Logos/screenshots
 ```
 
-The backend exposes REST endpoints secured with JWT bearer auth. EF Core (Pomelo MySQL provider) maps `Users`, `Roles`, and `Incidents`. Seeder ensures roles (Admin, 1st Level, 2nd Level, User) plus a default `admin@alertfrog.com` account and SOC responders exist.
+The backend exposes REST endpoints secured with JWT bearer auth. EF Core (Pomelo MySQL provider) maps `Users`, `Roles`, and `Incidents`. Seeder ensures roles (Admin, 1st Level, 2nd Level, User) plus a default `admin@alertfrog.com` account and SOC responders exist. Redis stores audit logs for all user/incident operations.
 
 The frontend consumes these APIs via `fetch` and central hooks. Session state lives in `localStorage` under `alertfrog_session` and drives conditional navigation.
+
+### UML Class Diagram
+
+For a comprehensive view of all classes, relationships, and dependencies, see the [UML Diagram](docs/UML-Diagram.md).
+
+![UML Class Diagram](assets/uml-diagram.png)
 
 ## Tech stack
 
