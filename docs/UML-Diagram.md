@@ -1,8 +1,11 @@
 # AlertFrog SIMS - UML Class Diagram
 
 ```mermaid
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#1a1a1a','primaryTextColor':'#fff','primaryBorderColor':'#00ff88','lineColor':'#00ff88','secondaryColor':'#2a2a2a','tertiaryColor':'#3a3a3a','fontSize':'16px','fontFamily':'Arial'}}}%%
 classDiagram
-    %% ========== DOMAIN MODELS ==========
+    direction TB
+    
+    %% ========== DOMAIN MODELS (TOP LAYER) ==========
     class User {
         +Guid Id
         +string Name
@@ -247,52 +250,52 @@ classDiagram
 
     %% ========== RELATIONSHIPS ==========
     
-    %% Domain Model Relationships
-    User "1" --> "1" Role : has
-    Role "1" --> "*" User : contains
-    Incident "1" --> "1" User : assignedTo
-    Incident "1" --> "1" User : registeredBy
+    %% Domain Model Relationships (Thick lines for associations)
+    User "1" --o "1" Role : has
+    Role "1" --o "*" User : contains
+    Incident "1" --o "1" User : assignedTo
+    Incident "1" --o "1" User : registeredBy
 
-    %% Data Layer
-    AlertFrogDbContext --> User : manages
-    AlertFrogDbContext --> Role : manages
-    AlertFrogDbContext --> Incident : manages
-    DbSeeder ..> AlertFrogDbContext : seeds
+    %% Data Layer (Thick lines for strong dependencies)
+    AlertFrogDbContext --|> User : manages
+    AlertFrogDbContext --|> Role : manages
+    AlertFrogDbContext --|> Incident : manages
+    DbSeeder ..|> AlertFrogDbContext : seeds
 
-    %% Service Layer
-    AuditLogService ..> AuditLogEntry : creates/retrieves
-    AuditLogService ..> RedisOptions : uses
+    %% Service Layer (Thick lines)
+    AuditLogService ..|> AuditLogEntry : creates
+    AuditLogService --|> RedisOptions : uses
 
-    %% Controller Dependencies
-    AuthController --> AlertFrogDbContext : uses
-    AuthController --> AuditLogService : logs
-    AuthController --> JwtOptions : uses
-    AuthController ..> LoginRequest : consumes
-    AuthController ..> RegisterRequest : consumes
-    AuthController ..> LoginResponse : produces
+    %% Controller Dependencies (Thick lines for composition)
+    AuthController --|> AlertFrogDbContext : uses
+    AuthController --|> AuditLogService : logs
+    AuthController --|> JwtOptions : uses
+    AuthController ..|> LoginRequest : consumes
+    AuthController ..|> RegisterRequest : consumes
+    AuthController ..|> LoginResponse : produces
 
-    UsersController --> AlertFrogDbContext : uses
-    UsersController --> AuditLogService : logs
-    UsersController ..> CreateUserRequest : consumes
-    UsersController ..> UpdateUserRequest : consumes
-    UsersController ..> UpdateProfileRequest : consumes
-    UsersController ..> UserSummaryResponse : produces
-    UsersController ..> ProfileResponse : produces
+    UsersController --|> AlertFrogDbContext : uses
+    UsersController --|> AuditLogService : logs
+    UsersController ..|> CreateUserRequest : consumes
+    UsersController ..|> UpdateUserRequest : consumes
+    UsersController ..|> UpdateProfileRequest : consumes
+    UsersController ..|> UserSummaryResponse : produces
+    UsersController ..|> ProfileResponse : produces
 
-    IncidentsController --> AlertFrogDbContext : uses
-    IncidentsController --> AuditLogService : logs
-    IncidentsController ..> CreateIncidentRequest : consumes
-    IncidentsController ..> UpdateIncidentRequest : consumes
-    IncidentsController ..> IncidentResponse : produces
+    IncidentsController --|> AlertFrogDbContext : uses
+    IncidentsController --|> AuditLogService : logs
+    IncidentsController ..|> CreateIncidentRequest : consumes
+    IncidentsController ..|> UpdateIncidentRequest : consumes
+    IncidentsController ..|> IncidentResponse : produces
 
-    LogsController --> AuditLogService : uses
-    LogsController ..> AuditLogEntry : produces
+    LogsController --|> AuditLogService : uses
+    LogsController ..|> AuditLogEntry : produces
 
-    %% Authorization
-    AuthController ..> SystemRoles : references
-    UsersController ..> SystemRoles : enforces
-    IncidentsController ..> SystemRoles : enforces
-    LogsController ..> SystemRoles : enforces
+    %% Authorization (Thick dashed lines)
+    AuthController ..|> SystemRoles : references
+    UsersController ..|> SystemRoles : enforces
+    IncidentsController ..|> SystemRoles : enforces
+    LogsController ..|> SystemRoles : enforces
 ```
 
 ## Architecture Overview

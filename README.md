@@ -62,11 +62,19 @@ The backend exposes REST endpoints secured with JWT bearer auth. EF Core (Pomelo
 
 The frontend consumes these APIs via `fetch` and central hooks. Session state lives in `localStorage` under `alertfrog_session` and drives conditional navigation.
 
-### UML Class Diagram
+### Architecture Diagrams
 
-For a comprehensive view of all classes, relationships, and dependencies, see the [UML Diagram](docs/UML-Diagram.md).
+#### Layered Architecture
+Clean separation of concerns with no crossing arrows:
 
-![UML Class Diagram](assets/uml-diagram.png)
+![Layered Architecture](assets/architecture-layered.png)
+
+#### Incident Creation Flow
+Step-by-step data flow for creating an incident:
+
+![Flow Diagram](assets/architecture-flow.png)
+
+For the detailed UML class diagram with all properties and methods, see the [Full UML Diagram](docs/UML-Diagram.md).
 
 ## Tech stack
 
