@@ -65,7 +65,6 @@ The frontend consumes these APIs via `fetch` and central hooks. Session state li
 ### Architecture Diagrams
 
 #### Layered Architecture
-Clean separation of concerns with no crossing arrows:
 
 ![Layered Architecture](assets/architecture-layered.png)
 
