@@ -171,16 +171,6 @@ dotnet tool run dotnet-ef database update --project backend/Backend.csproj --sta
 
 Swagger UI at `http://localhost:8080` lists full request/response contracts.
 
-## Roadmap
-
-- ✅ Role-based authentication, seeding, and admin workflows
-- ✅ Incident CRUD with escalation + resolution pipeline
-- ✅ Dedicated settings page and admin-only user dashboard
-- ⬜ Integrate Redis-backed audit logging
-- ⬜ Add automated tests + CI pipeline
-- ⬜ Implement notification channel (email / Slack) when incidents escalate
-- ⬜ Harden infra (TLS termination, production-ready compose profiles)
-
 ---
 
 _Questions or ideas? Drop them in issues or open a discussion in `docs/`._
