@@ -148,19 +148,26 @@ dotnet tool run dotnet-ef database update --project backend/Backend.csproj --sta
 
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
+| **Authentication** | | | |
 | `POST` | `/api/auth/login` | Returns JWT + session payload | Public |
-| `GET`  | `/api/users/me` | Current profile | Bearer |
-| `PUT`  | `/api/users/me` | Update name/email/password | Bearer |
-| `GET`  | `/api/users` | Admin list of users | Admin |
-| `POST` | `/api/users` | Create user | Admin |
-| `PUT`  | `/api/users/{id}` | Update user | Admin |
+| `POST` | `/api/auth/register` | Register new user | Public |
+| **User Profile** | | | |
+| `GET`  | `/api/users/me` | Get current user profile | Bearer |
+| `PUT`  | `/api/users/me` | Update own name/email/password | Bearer |
+| **User Management** | | | |
+| `GET`  | `/api/users` | List all users | Admin |
+| `POST` | `/api/users` | Create new user | Admin |
+| `PUT`  | `/api/users/{id}` | Update user details | Admin |
 | `DELETE` | `/api/users/{id}` | Delete user | Admin |
-| `GET`  | `/api/incidents` | List incidents | Bearer |
-| `POST` | `/api/incidents` | Create incident | Admin / Tier 1 / Tier 2 |
-| `PUT`  | `/api/incidents/{id}` | Update incident | Admin / Tier 1 / Tier 2 |
-| `POST` | `/api/incidents/{id}/resolve` | Resolve incident | Admin / Tier 1 / Tier 2 |
+| **Incident Management** | | | |
+| `GET`  | `/api/incidents` | List all incidents | Bearer |
+| `POST` | `/api/incidents` | Create new incident | Admin / 1st Level / 2nd Level |
+| `PUT`  | `/api/incidents/{id}` | Update incident | Admin / 1st Level / 2nd Level |
+| `POST` | `/api/incidents/{id}/resolve` | Mark incident as resolved | Admin / 1st Level / 2nd Level |
 | `POST` | `/api/incidents/{id}/escalate` | Escalate to higher tier | Bearer |
 | `DELETE` | `/api/incidents/{id}` | Delete incident | Admin |
+| **Audit Logs** | | | |
+| `GET`  | `/api/logs?count=100&skip=0` | Retrieve audit logs (paginated) | Admin |
 
 Swagger UI at `http://localhost:8080` lists full request/response contracts.
 
