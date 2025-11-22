@@ -66,6 +66,72 @@ The backend exposes REST endpoints secured with JWT bearer authentication. Entit
 
 The frontend is a React 18 + TypeScript SPA built with Vite, consuming backend APIs via native `fetch`. Session state persists in `localStorage` under the `alertfrog_session` key and drives role-based navigation and UI rendering. The application features a dark theme with neon-green accents matching the AlertFrog brand.
 
+### Database Structure
+
+#### MySQL Schema
+
+The MySQL database contains three core tables managed by Entity Framework Core:
+
+**Roles**
+
+| Column | Type | Constraints | Description |
+|--------|------|-------------|-------------|
+| `Id` | GUID | PK | Unique role identifier |
+| `Name` | VARCHAR | NOT NULL | Role name (Admin, User, 1st Level, 2nd Level) |
+| `CreatedAt` | DATETIME | NOT NULL | Creation timestamp |
+
+**Users**
+
+| Column | Type | Constraints | Description |
+|--------|------|-------------|-------------|
+| `Id` | GUID | PK | Unique user identifier |
+| `Email` | VARCHAR | UNIQUE, NOT NULL | User email address |
+| `Name` | VARCHAR | NOT NULL | Display name |
+| `PasswordHash` | VARCHAR | NOT NULL | BCrypt hashed password |
+| `RoleId` | GUID | FK → Roles.Id | Assigned role |
+| `CreatedAt` | DATETIME | NOT NULL | Account creation timestamp |
+
+**Incidents**
+
+| Column | Type | Constraints | Description |
+|--------|------|-------------|-------------|
+| `Id` | GUID | PK | Unique incident identifier |
+| `Title` | VARCHAR | NOT NULL | Incident title |
+| `Description` | TEXT | NOT NULL | Detailed description |
+| `Severity` | VARCHAR | NOT NULL | Low, Medium, High, Critical |
+| `Status` | VARCHAR | NOT NULL | Open, Investigating, Resolved |
+| `Cve` | VARCHAR | NULL | CVE identifier (e.g., CVE-2025-1234) |
+| `AffectedSystem` | VARCHAR | NULL | System name/hostname |
+| `AssignedUserId` | GUID | FK → Users.Id | Current assignee |
+| `RegistrantUserId` | GUID | FK → Users.Id | User who created the incident |
+| `CreatedAt` | DATETIME | NOT NULL | Incident creation timestamp |
+| `UpdatedAt` | DATETIME | NOT NULL | Last modification timestamp |
+| `ResolvedAt` | DATETIME | NULL | Resolution timestamp |
+
+#### Redis Structure
+
+Redis is used exclusively for audit logging with a capped list structure:
+
+| Property | Value | Description |
+|----------|-------|-------------|
+| **Key** | `alertfrog:audit_log` | Redis key for audit log list |
+| **Type** | List | Redis data structure (LPUSH/LTRIM) |
+| **Max Entries** | 1000 | Automatically trimmed to maintain cap |
+| **Pattern** | FIFO | Oldest entries removed when limit reached |
+
+**Audit Log Entry Format (JSON):**
+
+| Field | Type | Example | Description |
+|-------|------|---------|-------------|
+| `timestamp` | ISO 8601 | `2025-11-22T10:15:00Z` | When the action occurred |
+| `action` | String | `User Login`, `Incident Created` | Type of action performed |
+| `actorEmail` | String | `admin@alertfrog.com` | Email of user who performed action |
+| `actorRole` | String | `Admin`, `1st Level` | Role of the actor |
+| `targetEntity` | String | `Incident: Server Breach` | Entity affected by the action |
+| `details` | String | `Severity: High, Status: Open` | Additional context about the action |
+
+All authentication events, user CRUD operations, and incident modifications are logged to this capped list, providing a rolling audit trail accessible via the admin logs dashboard.
+
 ### Architecture Diagrams
 
 #### Layered Architecture
@@ -165,6 +231,7 @@ dotnet tool run dotnet-ef database update --project backend/Backend.csproj --sta
 | `DELETE` | `/api/users/{id}` | Delete user | Admin |
 | **Incident Management** | | | |
 | `GET`  | `/api/incidents` | List all incidents | Bearer |
+| `GET`  | `/api/incidents/{id}` | Get single incident by ID | Bearer |
 | `POST` | `/api/incidents` | Create new incident | Admin / 1st Level / 2nd Level |
 | `PUT`  | `/api/incidents/{id}` | Update incident | Admin / 1st Level / 2nd Level |
 | `POST` | `/api/incidents/{id}/resolve` | Mark incident as resolved | Admin / 1st Level / 2nd Level |
