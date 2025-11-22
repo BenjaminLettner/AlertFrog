@@ -6,11 +6,12 @@ import { DashboardView } from './pages/DashboardView'
 import { SettingsView } from './pages/SettingsView'
 import { UserManagementView } from './pages/UserManagementView'
 import { IncidentsView } from './pages/IncidentsView'
+import { IncidentDetailView } from './pages/IncidentDetailView'
 import { LogsView } from './pages/LogsView'
 
 const STORAGE_KEY = 'alertfrog_session'
 
-type View = 'dashboard' | 'incidents' | 'settings' | 'userManagement' | 'logs'
+type View = 'dashboard' | 'incidents' | 'incidentDetail' | 'settings' | 'userManagement' | 'logs'
 
 function App() {
   const [session, setSession] = useState<Session | null>(() => {
@@ -30,6 +31,7 @@ function App() {
   }, [session])
 
   const [view, setView] = useState<View>('dashboard')
+  const [selectedIncidentId, setSelectedIncidentId] = useState<string | null>(null)
 
   const handleLogin = (payload: Session) => {
     setSession(payload)
@@ -69,6 +71,21 @@ function App() {
         <IncidentsView
           session={session}
           onGoDashboard={() => setView('dashboard')}
+          onOpenSettings={() => setView('settings')}
+          onOpenUserManagement={() => setView('userManagement')}
+          onOpenLogs={() => setView('logs')}
+          onSignOut={handleSignOut}
+          onViewIncident={(incidentId) => {
+            setSelectedIncidentId(incidentId)
+            setView('incidentDetail')
+          }}
+        />
+      ) : view === 'incidentDetail' && selectedIncidentId ? (
+        <IncidentDetailView
+          session={session}
+          incidentId={selectedIncidentId}
+          onGoDashboard={() => setView('dashboard')}
+          onGoBackToIncidents={() => setView('incidents')}
           onOpenSettings={() => setView('settings')}
           onOpenUserManagement={() => setView('userManagement')}
           onOpenLogs={() => setView('logs')}

@@ -488,6 +488,84 @@ select:focus {
   gap: 0.8rem;
 }
 
+.incident-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.incident-detail-meta {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.incident-detail-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.incident-detail-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.detail-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.detail-section h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--frog-green);
+}
+
+.detail-section h4 {
+  margin: 0;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--frog-text-muted);
+}
+
+.detail-section p {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.incidents-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.severity.low {
+  background: rgba(100, 200, 255, 0.2);
+  color: #64c8ff;
+}
+
+.status-resolved {
+  background: rgba(72, 199, 142, 0.2);
+  color: var(--frog-green);
+}
+
+.small {
+  font-size: 0.85rem;
+}
+
 @media (max-width: 768px) {
   .app-shell {
     padding: 1.5rem;
@@ -500,5 +578,17 @@ select:focus {
 
   .action-row {
     flex-direction: column;
+  }
+
+  .incident-detail-header {
+    flex-direction: column;
+  }
+
+  .incident-detail-actions {
+    width: 100%;
+  }
+
+  .detail-grid {
+    grid-template-columns: 1fr;
   }
 }

@@ -31,6 +31,22 @@ public class IncidentsController(AlertFrogDbContext dbContext, AuditLogService a
         return Ok(responses);
     }
 
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<IncidentResponse>> GetIncident(Guid id)
+    {
+        var incident = await dbContext.Incidents
+            .Include(i => i.AssignedUser)!.ThenInclude(u => u.Role)
+            .Include(i => i.RegistrantUser)!.ThenInclude(u => u.Role)
+            .SingleOrDefaultAsync(i => i.Id == id);
+
+        if (incident is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(MapIncident(incident));
+    }
+
     [HttpPost]
     [Authorize(Roles = ManageIncidentRoles)]
     public async Task<ActionResult<IncidentResponse>> CreateIncident(CreateIncidentRequest request)

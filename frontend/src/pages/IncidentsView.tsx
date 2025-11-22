@@ -12,6 +12,7 @@ type IncidentsViewProps = {
   onOpenUserManagement: () => void
   onOpenLogs?: () => void
   onSignOut: () => void
+  onViewIncident: (incidentId: string) => void
 }
 
 type ResponderOption = {
@@ -41,6 +42,7 @@ export const IncidentsView = ({
   onOpenUserManagement,
   onOpenLogs,
   onSignOut,
+  onViewIncident,
 }: IncidentsViewProps) => {
   const navItems = useMemo(() => {
     return session.role.toLowerCase() === 'admin'
@@ -80,6 +82,7 @@ export const IncidentsView = ({
   const [actionError, setActionError] = useState('')
   const [success, setSuccess] = useState('')
   const [isSaving, setIsSaving] = useState(false)
+  const [showCreateForm, setShowCreateForm] = useState(false)
 
   const isAdmin = session.role.toLowerCase() === 'admin'
 
@@ -123,6 +126,7 @@ export const IncidentsView = ({
     setForm(emptyForm)
     setActionError('')
     setSuccess('')
+    setShowCreateForm(false)
   }
 
   const handleEdit = (incidentId: string) => {
@@ -138,6 +142,7 @@ export const IncidentsView = ({
       affectedSystem: incident.affectedSystem ?? '',
       assignedUserId: incident.assignedUserId,
     })
+    setShowCreateForm(true)
     setSuccess('Editing existing incident')
   }
 
@@ -260,12 +265,18 @@ export const IncidentsView = ({
             <button className="ghost" type="button" onClick={refreshIncidents} disabled={loading}>
               Refresh
             </button>
+            {!showCreateForm && (
+              <button className="frog-button" type="button" onClick={() => setShowCreateForm(true)}>
+                Create incident
+              </button>
+            )}
           </div>
         </header>
 
-        <section className="glass-card">
-          <h3>{form.id ? 'Edit incident' : 'Create incident'}</h3>
-          <form className="incidents-form" onSubmit={handleSubmit}>
+        {showCreateForm && (
+          <section className="glass-card">
+            <h3>{form.id ? 'Edit incident' : 'Create incident'}</h3>
+            <form className="incidents-form" onSubmit={handleSubmit}>
             <div className="grid two-cols">
               <label className="input-label">
                 Title
@@ -368,6 +379,7 @@ export const IncidentsView = ({
             </div>
           </form>
         </section>
+        )}
 
         <section className="glass-card incidents-card">
           {loading ? (
@@ -418,6 +430,9 @@ export const IncidentsView = ({
                   </span>
                   <span>{formatTimestamp(incident.createdAt)}</span>
                   <span className="table-actions">
+                    <button className="ghost small" type="button" onClick={() => onViewIncident(incident.id)}>
+                      View
+                    </button>
                     {incident.canEscalate && (
                       <button
                         className="ghost small"
