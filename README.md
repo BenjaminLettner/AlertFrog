@@ -160,7 +160,7 @@ For detailed architecture documentation and additional diagrams, see:
 
 | Dashboard | Incident Desk |
 |-----------|---------------|
-| ![Dashboard screenshot](assets/screenshot-dashboard.png) | ![Incident desk screenshot](assets/screenshot-incidents.png) |
+| ![Dashboard screenshot](assets/dashboard.png) | ![Incident desk screenshot](assets/incidentdashboard.png) |
 
 > _Screens live under `assets/`; update them as the UI evolves._
 
