@@ -17,15 +17,20 @@ _Security Incident Management System (SIMS) built for SOC teams that need authen
 ## Table of contents
 
 1. [Features](#features)
-2. [Architecture](#architecture)
-3. [Tech stack](#tech-stack)
+2. [Tech Stack](#tech-stack)
+3. [Getting Started](#getting-started)
+   - [Running Locally](#running-locally)
+   - [Environment Variables](#environment-variables)
+   - [Default Credentials](#default-credentials)
 4. [Screens](#screens)
-5. [Running locally](#running-locally)
-6. [Environment variables](#environment-variables)
-7. [Development scripts](#development-scripts)
-8. [API surface](#api-surface)
-9. [Security](#security)
-10. [Documentation](#documentation)
+5. [Architecture](#architecture)
+   - [Project Structure](#project-structure)
+   - [Database Structure](#database-structure)
+   - [Architecture Diagrams](#architecture-diagrams)
+6. [API Reference](#api-reference)
+7. [Development](#development)
+8. [Security](#security)
+9. [Documentation](#documentation)
 
 ## Features
 
@@ -41,7 +46,69 @@ _Security Incident Management System (SIMS) built for SOC teams that need authen
 - **Dockerized stack** – Backend, frontend, MySQL, and Redis orchestrated via docker-compose for one-command startup.
 - **Seeded data** – Automatic role, admin, and responder seeding with example incidents ensure the UI is populated on first launch.
 
+## Tech stack
+
+| Layer     | Technology |
+|-----------|------------|
+| Frontend  | React 18, TypeScript, Vite, CSS Modules |
+| Backend   | ASP.NET Core 8, EF Core, JWT Auth |
+| Database  | MySQL 8 (Pomelo provider) |
+| Cache/Logs | Redis 7 (audit logging, capped at 1000 entries) |
+| Tooling   | docker-compose, dotnet-ef local tools |
+
+## Getting Started
+
+### Running locally
+
+```bash
+# 0. Pre-reqs: Docker Desktop, Node 20+, .NET 8 SDK (for local tooling)
+
+# 1. Copy env template and customize ports/secrets if needed
+cp infra/.env.example infra/.env
+
+# 2. Launch the stack
+docker compose -f infra/docker-compose.yml --env-file infra/.env up -d --build
+
+# 3. Access services
+#   Frontend SPA     -> http://localhost:5173
+#   Backend + Swagger-> http://localhost:8080
+#   MySQL            -> localhost:3306 (see infra/.env)
+#   Redis            -> localhost:6379
+
+# Tail logs
+docker compose -f infra/docker-compose.yml logs -f backend
+```
+
+### Environment variables
+
+`infra/.env.example` documents every variable consumed by docker-compose:
+
+| Variable | Description |
+|----------|-------------|
+| `MYSQL_*` | DB name, user, and passwords used by MySQL + backend |
+| `REDIS_HOST/PORT` | Redis connection injected into backend |
+| `JWT_*` | Issuer, audience, signing key, and expiry minutes for token generation |
+| `VITE_API_BASE_URL` | Base URL used by the frontend to reach the API |
+
+### Default Credentials
+
+**Admin Account:**
+- Email: `admin@alertfrog.com`
+- Password: `alertfrog`
+
+⚠️ **Change these credentials immediately in production!**
+
+## Screens
+
+| Dashboard | Incident Desk |
+|-----------|---------------|
+| ![Dashboard screenshot](assets/dashboard.png) | ![Incident desk screenshot](assets/incidentdashboard.png) |
+
+> _Screens live under `assets/`; update them as the UI evolves._
+
 ## Architecture
+
+### Project Structure
 
 ```
 ├── backend/            # ASP.NET Core 8 WebAPI
@@ -146,75 +213,7 @@ For detailed architecture documentation and additional diagrams, see:
 - [Simplified Architecture Diagrams](docs/UML-Diagram-Simplified.md) - Recommended overview
 - [Full UML Class Diagram](docs/UML-Diagram.md) - Complete technical reference
 
-## Tech stack
-
-| Layer     | Technology |
-|-----------|------------|
-| Frontend  | React 18, TypeScript, Vite, CSS Modules |
-| Backend   | ASP.NET Core 8, EF Core, JWT Auth |
-| Database  | MySQL 8 (Pomelo provider) |
-| Cache/Logs | Redis 7 (audit logging, capped at 1000 entries) |
-| Tooling   | docker-compose, dotnet-ef local tools |
-
-## Screens
-
-| Dashboard | Incident Desk |
-|-----------|---------------|
-| ![Dashboard screenshot](assets/dashboard.png) | ![Incident desk screenshot](assets/incidentdashboard.png) |
-
-> _Screens live under `assets/`; update them as the UI evolves._
-
-## Running locally
-
-```bash
-# 0. Pre-reqs: Docker Desktop, Node 20+, .NET 8 SDK (for local tooling)
-
-# 1. Copy env template and customize ports/secrets if needed
-cp infra/.env.example infra/.env
-
-# 2. Launch the stack
-docker compose -f infra/docker-compose.yml --env-file infra/.env up -d --build
-
-# 3. Access services
-#   Frontend SPA     -> http://localhost:5173
-#   Backend + Swagger-> http://localhost:8080
-#   MySQL            -> localhost:3306 (see infra/.env)
-#   Redis            -> localhost:6379
-
-# Tail logs
-docker compose -f infra/docker-compose.yml logs -f backend
-```
-
-### Applying EF Core migrations
-
-```bash
-# From repo root (installs local dotnet-ef tool via manifest)
-dotnet tool restore
-dotnet tool run dotnet-ef migrations add SomeChange --project backend/Backend.csproj --startup-project backend/Backend.csproj
-dotnet tool run dotnet-ef database update --project backend/Backend.csproj --startup-project backend/Backend.csproj
-```
-
-> When the DB schema is already provisioned by Docker, connect to the running MySQL container and run the ALTER script (credentials in `infra/.env`).
-
-## Environment variables
-
-`infra/.env.example` documents every variable consumed by docker-compose:
-
-| Variable | Description |
-|----------|-------------|
-| `MYSQL_*` | DB name, user, and passwords used by MySQL + backend |
-| `REDIS_HOST/PORT` | Redis connection injected into backend |
-| `JWT_*` | Issuer, audience, signing key, and expiry minutes for token generation |
-| `VITE_API_BASE_URL` | Base URL used by the frontend to reach the API |
-
-## Development scripts
-
-- `docker compose ... up -d --build` – start or rebuild the entire stack
-- `docker compose ... logs -f backend` – follow backend logs (includes EF SQL output)
-- `npm install && npm run dev` (inside `frontend/`) – optional local-only Vite dev server
-- `dotnet watch run` (inside `backend/`) – hot reload backend without Docker
-
-## API surface
+## API Reference
 
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
@@ -242,6 +241,26 @@ dotnet tool run dotnet-ef database update --project backend/Backend.csproj --sta
 
 Swagger UI at `http://localhost:8080` lists full request/response contracts.
 
+## Development
+
+### Development Scripts
+
+- `docker compose ... up -d --build` – start or rebuild the entire stack
+- `docker compose ... logs -f backend` – follow backend logs (includes EF SQL output)
+- `npm install && npm run dev` (inside `frontend/`) – optional local-only Vite dev server
+- `dotnet watch run` (inside `backend/`) – hot reload backend without Docker
+
+### Applying EF Core Migrations
+
+```bash
+# From repo root (installs local dotnet-ef tool via manifest)
+dotnet tool restore
+dotnet tool run dotnet-ef migrations add SomeChange --project backend/Backend.csproj --startup-project backend/Backend.csproj
+dotnet tool run dotnet-ef database update --project backend/Backend.csproj --startup-project backend/Backend.csproj
+```
+
+> When the DB schema is already provisioned by Docker, connect to the running MySQL container and run the ALTER script (credentials in `infra/.env`).
+
 ## Security
 
 AlertFrog SIMS implements multiple layers of security:
@@ -252,14 +271,6 @@ AlertFrog SIMS implements multiple layers of security:
 - **SQL Injection Protection**: EF Core parameterized queries
 - **Audit Trail**: Comprehensive logging of all security-relevant operations
 - **CORS**: Configured for development and production environments
-
-### Default Credentials
-
-**Admin Account:**
-- Email: `admin@alertfrog.com`
-- Password: `alertfrog`
-
-⚠️ **Change these credentials immediately in production!**
 
 ### Security Audit
 
