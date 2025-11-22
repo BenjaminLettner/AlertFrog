@@ -6,9 +6,14 @@
 
 [![dotnet](https://img.shields.io/badge/.NET-8.0-5C2D91?logo=dotnet)](#tech-stack)
 [![react](https://img.shields.io/badge/React-18-61dafb?logo=react&logoColor=222)](#tech-stack)
-[![mysql](https://img.shields.io/badge/MySQL-8.0-005C84?logo=mysql&logoColor=fff)](#architecture)
-[![docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=fff)](#running-locally)
-[![license](https://img.shields.io/badge/Status-Active-success)](#features)
+[![typescript](https://img.shields.io/badge/TypeScript-5.0-3178C6?logo=typescript&logoColor=fff)](#tech-stack)
+[![vite](https://img.shields.io/badge/Vite-5.0-646CFF?logo=vite&logoColor=fff)](#tech-stack)
+[![mysql](https://img.shields.io/badge/MySQL-8.0-4479A1?logo=mysql&logoColor=fff)](#architecture)
+[![redis](https://img.shields.io/badge/Redis-7.0-DC382D?logo=redis&logoColor=fff)](#architecture)
+[![docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=fff)](#getting-started)
+[![jwt](https://img.shields.io/badge/JWT-Auth-000000?logo=jsonwebtokens&logoColor=fff)](#security)
+[![efcore](https://img.shields.io/badge/EF_Core-8.0-512BD4?logo=.net&logoColor=fff)](#architecture)
+[![status](https://img.shields.io/badge/Status-Active-success)](#features)
 
 _Security Incident Management System (SIMS) built for SOC teams that need authentication, user administration, and a first-class incident workflow._
 
@@ -287,6 +292,18 @@ A comprehensive SAST (Static Application Security Testing) scan has been perform
 - **[Full UML Class Diagram](docs/UML-Diagram.md)** - Complete technical class diagram
 - **[Project Plan](docs/ProjectPlan.md)** - Original project planning and requirements
 - **[Project Structure](docs/ProjectStructure.md)** - Detailed file structure and organization
+
+---
+
+## Disclaimer
+
+This project was developed with the assistance of AI tools to accelerate development and enhance code quality. AI was used for:
+- Code generation and refactoring
+- Documentation writing and structuring
+- Architecture design suggestions
+- Security best practices implementation
+
+All AI-generated code has been reviewed, tested, and validated to ensure it meets security and quality standards.
 
 ---
 
