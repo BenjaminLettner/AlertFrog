@@ -152,5 +152,53 @@ flowchart LR
 2. **Repository Pattern**: DbContext abstracts data access
 3. **DTO Pattern**: Request/Response objects separate from domain models
 4. **Dependency Injection**: All dependencies injected via constructors
-5. **Audit Logging**: Cross-cutting concern via AuditLogService
-6. **Role-Based Authorization**: Declarative authorization with SystemRoles
+5. **Audit Logging**: Cross-cutting concern via AuditLogService with Redis persistence
+6. **Role-Based Authorization**: Declarative authorization with SystemRoles constants
+7. **Escalation Chain**: Automated incident escalation (1st Level → 2nd Level → Admin)
+
+## Technology Stack
+
+### Backend
+- **Framework**: ASP.NET Core 8 WebAPI
+- **ORM**: Entity Framework Core 8 with Pomelo MySQL provider
+- **Authentication**: JWT Bearer tokens with BCrypt password hashing
+- **Logging**: Redis-backed audit logging (capped at 1000 entries)
+- **Validation**: Data annotations and model validation
+
+### Frontend
+- **Framework**: React 18 with TypeScript
+- **Build Tool**: Vite
+- **Styling**: CSS Modules with custom dark theme
+- **State Management**: React hooks and localStorage for session
+- **HTTP Client**: Native fetch API
+
+### Infrastructure
+- **Database**: MySQL 8.0
+- **Cache/Logs**: Redis 7 (Alpine)
+- **Containerization**: Docker with docker-compose
+- **Development**: Hot reload for both frontend and backend
+
+## System Roles
+
+AlertFrog implements four distinct user roles with specific permissions:
+
+1. **Admin** - Full system access
+   - User management (CRUD)
+   - Incident management (CRUD + resolve + escalate)
+   - Audit log access
+   - Settings management
+
+2. **1st Level** - Tier 1 SOC Analyst
+   - Incident management (CRUD + resolve + escalate)
+   - Can escalate to 2nd Level
+   - View own profile
+
+3. **2nd Level** - Tier 2 SOC Specialist
+   - Incident management (CRUD + resolve + escalate)
+   - Can escalate to Admin
+   - View own profile
+
+4. **User** - Standard Operator
+   - View incidents
+   - View own profile
+   - Limited permissions

@@ -24,18 +24,22 @@ _Security Incident Management System (SIMS) built for SOC teams that need authen
 6. [Environment variables](#environment-variables)
 7. [Development scripts](#development-scripts)
 8. [API surface](#api-surface)
-9. [Roadmap](#roadmap)
+9. [Security](#security)
+10. [Documentation](#documentation)
 
 ## Features
 
 - **Secure authentication** – JWT-based login backed by BCrypt hashing, with configurable expiry (default 8 hours).
-- **Role-aware UI** – Admin, 1st Level, and 2nd Level responders receive tailored navigation and abilities.
+- **Role-based access control** – Four distinct roles (Admin, User, 1st Level, 2nd Level) with tailored permissions and UI navigation.
 - **User management** – Admin-only dashboard to list, create, update, and remove users with role assignment and password rotation.
-- **Incident desk** – Full CRUD + resolve/escalate controls. Track severity, CVE, affected system, assignees, registrants, and timestamps.
-- **Dashboard insights** – Aggregated active/resolved metrics synced live with backend data.
-- **Dark-theme UX** – Vite + React SPA styled in AlertFrog’s neon-green brand language.
+- **Incident management** – Full CRUD + resolve/escalate controls. Track severity, CVE, affected system, assignees, registrants, and timestamps.
+- **Incident escalation** – Automated escalation chain: 1st Level → 2nd Level → Admin with role-based permissions.
+- **Audit logging** – Comprehensive Redis-backed audit trail for all user logins, user modifications, and incident operations.
+- **Admin logs dashboard** – Real-time audit log viewer with pagination, showing timestamp, action, actor, target, and details.
+- **Dashboard insights** – Aggregated active/resolved incident metrics synced live with backend data.
+- **Dark-theme UX** – Vite + React SPA styled in AlertFrog's neon-green brand language with responsive design.
 - **Dockerized stack** – Backend, frontend, MySQL, and Redis orchestrated via docker-compose for one-command startup.
-- **Seeded data** – Automatic admin + responder seeding and example incidents ensure the UI is populated on first launch.
+- **Seeded data** – Automatic role, admin, and responder seeding with example incidents ensure the UI is populated on first launch.
 
 ## Architecture
 
@@ -58,9 +62,9 @@ _Security Incident Management System (SIMS) built for SOC teams that need authen
 └── assets/             # Logos/screenshots
 ```
 
-The backend exposes REST endpoints secured with JWT bearer auth. EF Core (Pomelo MySQL provider) maps `Users`, `Roles`, and `Incidents`. Seeder ensures roles (Admin, 1st Level, 2nd Level, User) plus a default `admin@alertfrog.com` account and SOC responders exist. Redis stores audit logs for all user/incident operations.
+The backend exposes REST endpoints secured with JWT bearer authentication. Entity Framework Core with Pomelo MySQL provider manages `Users`, `Roles`, and `Incidents` entities. Database seeding ensures four roles (Admin, User, 1st Level, 2nd Level), a default admin account (`admin@alertfrog.com`), SOC responders, and sample incidents are created on first launch. Redis stores a capped audit log (1000 entries) for all authentication events, user modifications, and incident operations.
 
-The frontend consumes these APIs via `fetch` and central hooks. Session state lives in `localStorage` under `alertfrog_session` and drives conditional navigation.
+The frontend is a React 18 + TypeScript SPA built with Vite, consuming backend APIs via native `fetch`. Session state persists in `localStorage` under the `alertfrog_session` key and drives role-based navigation and UI rendering. The application features a dark theme with neon-green accents matching the AlertFrog brand.
 
 ### Architecture Diagrams
 
@@ -83,7 +87,7 @@ For detailed architecture documentation and additional diagrams, see:
 | Frontend  | React 18, TypeScript, Vite, CSS Modules |
 | Backend   | ASP.NET Core 8, EF Core, JWT Auth |
 | Database  | MySQL 8 (Pomelo provider) |
-| Messaging | Redis 7 (available for logging / caching hooks) |
+| Cache/Logs | Redis 7 (audit logging, capped at 1000 entries) |
 | Tooling   | docker-compose, dotnet-ef local tools |
 
 ## Screens
@@ -170,6 +174,41 @@ dotnet tool run dotnet-ef database update --project backend/Backend.csproj --sta
 | `GET`  | `/api/logs?count=100&skip=0` | Retrieve audit logs (paginated) | Admin |
 
 Swagger UI at `http://localhost:8080` lists full request/response contracts.
+
+## Security
+
+AlertFrog SIMS implements multiple layers of security:
+
+- **Authentication**: JWT tokens with BCrypt password hashing
+- **Authorization**: Role-based access control (RBAC) with four distinct roles
+- **Input Validation**: Request DTOs with validation attributes
+- **SQL Injection Protection**: EF Core parameterized queries
+- **Audit Trail**: Comprehensive logging of all security-relevant operations
+- **CORS**: Configured for development and production environments
+
+### Default Credentials
+
+**Admin Account:**
+- Email: `admin@alertfrog.com`
+- Password: `alertfrog`
+
+⚠️ **Change these credentials immediately in production!**
+
+### Security Audit
+
+A comprehensive SAST (Static Application Security Testing) scan has been performed. See [Security Audit Report](docs/SECURITY-AUDIT.md) for:
+- Detailed security findings and remediation steps
+- OWASP Top 10 2021 compliance mapping
+- Container security hardening recommendations
+- Best practices for production deployment
+
+## Documentation
+
+- **[Security Audit Report](docs/SECURITY-AUDIT.md)** - SAST scan results and security recommendations
+- **[Simplified Architecture Diagrams](docs/UML-Diagram-Simplified.md)** - Layered architecture and flow diagrams
+- **[Full UML Class Diagram](docs/UML-Diagram.md)** - Complete technical class diagram
+- **[Project Plan](docs/ProjectPlan.md)** - Original project planning and requirements
+- **[Project Structure](docs/ProjectStructure.md)** - Detailed file structure and organization
 
 ---
 
